@@ -1,0 +1,11 @@
+{
+  "name": "J. Karthikeyan & Co. - Chartered Accountants",
+  "short_name": "JK & Co.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#081B33",
+  "theme_color": "#081B33",
+  "icons": [
+    { "src": "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
