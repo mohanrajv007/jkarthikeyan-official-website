@@ -35,14 +35,14 @@
     { name: "Bihar", lat: 25.6, lon: 85.1, clients: 16 },
     { name: "Chhattisgarh", lat: 21.25, lon: 81.6, clients: 14 },
     { name: "Goa", lat: 15.5, lon: 73.8, clients: 8 },
-    { name: "Gujarat", lat: 23.2, lon: 72.6, clients: 46 },
+    { name: "Gujarat", lat: 23.2, lon: 72.6, clients: 46, major: true },
     { name: "Haryana", lat: 29.05, lon: 76.08, clients: 26 },
     { name: "Himachal Pradesh", lat: 31.1, lon: 77.2, clients: 9 },
     { name: "Jharkhand", lat: 23.35, lon: 85.3, clients: 13 },
-    { name: "Karnataka", lat: 12.97, lon: 77.6, clients: 64 },
+    { name: "Karnataka", lat: 12.97, lon: 77.6, clients: 64, major: true },
     { name: "Kerala", lat: 8.5, lon: 76.9, clients: 36 },
     { name: "Madhya Pradesh", lat: 23.25, lon: 77.4, clients: 20 },
-    { name: "Maharashtra", lat: 19.07, lon: 72.87, clients: 78 },
+    { name: "Maharashtra", lat: 19.07, lon: 72.87, clients: 78, major: true },
     { name: "Manipur", lat: 24.8, lon: 93.9, clients: 3 },
     { name: "Meghalaya", lat: 25.6, lon: 91.9, clients: 4 },
     { name: "Mizoram", lat: 23.7, lon: 92.7, clients: 2 },
@@ -54,13 +54,13 @@
     { name: "Tamil Nadu", lat: 13.08, lon: 80.27, clients: 96, hq: true },
     { name: "Telangana", lat: 17.4, lon: 78.5, clients: 52 },
     { name: "Tripura", lat: 23.8, lon: 91.3, clients: 4 },
-    { name: "Uttar Pradesh", lat: 26.85, lon: 80.9, clients: 40 },
+    { name: "Uttar Pradesh", lat: 26.85, lon: 80.9, clients: 40, major: true },
     { name: "Uttarakhand", lat: 30.3, lon: 78.05, clients: 11 },
-    { name: "West Bengal", lat: 22.57, lon: 88.36, clients: 42 },
+    { name: "West Bengal", lat: 22.57, lon: 88.36, clients: 42, major: true },
     { name: "Andaman & Nicobar", lat: 11.6, lon: 92.7, clients: 2 },
     { name: "Chandigarh", lat: 30.73, lon: 76.78, clients: 6 },
     { name: "Dadra & Nagar Haveli and Daman & Diu", lat: 20.27, lon: 73.0, clients: 2 },
-    { name: "Delhi (NCT)", lat: 28.6, lon: 77.2, clients: 58 },
+    { name: "Delhi (NCT)", lat: 28.6, lon: 77.2, clients: 58, major: true },
     { name: "Jammu & Kashmir", lat: 33.7, lon: 75.0, clients: 6 },
     { name: "Ladakh", lat: 34.15, lon: 77.58, clients: 2 },
     { name: "Lakshadweep", lat: 10.57, lon: 72.64, clients: 1 },
@@ -141,7 +141,7 @@
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
   var scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x07131f, 0.014);
+  scene.fog = new THREE.FogExp2(0x050b14, 0.009);
 
   var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
   var baseCamPos = new THREE.Vector3(0, 3.2, 17);
@@ -169,8 +169,8 @@
     var ctx = c.getContext("2d");
     var grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
     grad.addColorStop(0, "rgba(255,255,255,1)");
-    grad.addColorStop(0.35, "rgba(224,192,104,0.95)");
-    grad.addColorStop(1, "rgba(224,192,104,0)");
+    grad.addColorStop(0.35, "rgba(255,209,102,0.97)");
+    grad.addColorStop(1, "rgba(255,209,102,0)");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 64, 64);
     return new THREE.CanvasTexture(c);
@@ -183,28 +183,47 @@
     c.width = c.height = 128;
     var ctx = c.getContext("2d");
     var grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-    grad.addColorStop(0, "rgba(212,175,55,0.5)");
-    grad.addColorStop(0.5, "rgba(212,175,55,0.16)");
-    grad.addColorStop(1, "rgba(212,175,55,0)");
+    grad.addColorStop(0, "rgba(255,209,102,0.55)");
+    grad.addColorStop(0.5, "rgba(255,209,102,0.2)");
+    grad.addColorStop(1, "rgba(255,209,102,0)");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 128, 128);
     return new THREE.CanvasTexture(c);
   }
   var haloTexture = makeHaloTexture();
 
-  /* ---------- Dot-map point cloud ---------- */
+  /* ---------- Dot-map point cloud ----------
+     Random (not fixed-stride) sampling: a modulo stride over the row-major
+     raster beats against the shape's varying row width and produces visible
+     Moire/wave banding, worst where the peninsula narrows. Independent random
+     keep-probability avoids any such periodic pattern. */
   var rawDots = silhouette.dots;
   var totalCandidates = rawDots.length / 2;
-  var maxDots = 5500;
-  var keepEvery = Math.max(1, Math.floor(totalCandidates / maxDots));
+  var maxDots = 7000;
+  var keepProbability = Math.min(1, maxDots / totalCandidates);
   var finalPositions = [];
-  for (var i = 0, k = 0; i < rawDots.length; i += 2, k++) {
-    if (k % keepEvery !== 0) continue;
+  for (var i = 0; i < rawDots.length; i += 2) {
+    if (Math.random() > keepProbability) continue;
     var jpx = rawDots[i] + (Math.random() - 0.5) * STRIDE;
     var jpy = rawDots[i + 1] + (Math.random() - 0.5) * STRIDE;
     var w = pixelToWorld(jpx, jpy);
     finalPositions.push(w.x, w.y, (Math.random() - 0.5) * 0.18);
   }
+
+  /* Island clusters (Andaman & Nicobar, Lakshadweep) — the traced mainland
+     silhouette doesn't include these, so scatter small procedural clusters
+     at their real projected lat/lon instead. */
+  function addIslandCluster(lat, lon, count, spreadX, spreadY) {
+    var center = regionWorldPos({ lat: lat, lon: lon });
+    for (var n = 0; n < count; n++) {
+      var ox = (Math.random() - 0.5) * spreadX;
+      var oy = (Math.random() - 0.5) * spreadY * (0.5 + Math.random() * 0.5);
+      finalPositions.push(center.x + ox, center.y + oy, (Math.random() - 0.5) * 0.18);
+    }
+  }
+  addIslandCluster(9.5, 92.8, 150, 0.55, 2.4);
+  addIslandCluster(10.57, 72.64, 60, 0.35, 0.7);
+
   var dotPositions = new Float32Array(finalPositions);
   var scatterOffsets = new Float32Array(dotPositions.length);
   for (var s = 0; s < scatterOffsets.length; s += 3) {
@@ -219,11 +238,11 @@
   dotGeo.setAttribute("position", new THREE.BufferAttribute(livePositions, 3));
   var dotMat = new THREE.PointsMaterial({
     map: glowTexture,
-    color: 0xe0c068,
-    size: 0.1,
+    color: 0xffd166,
+    size: 0.125,
     sizeAttenuation: true,
     transparent: true,
-    opacity: 0.94,
+    opacity: 1,
     depthWrite: false,
     blending: THREE.AdditiveBlending
   });
@@ -235,11 +254,11 @@
   haloGeo.setAttribute("position", dotGeo.getAttribute("position"));
   var haloMat = new THREE.PointsMaterial({
     map: haloTexture,
-    color: 0xd4af37,
-    size: 0.26,
+    color: 0xffd166,
+    size: 0.32,
     sizeAttenuation: true,
     transparent: true,
-    opacity: 0.22,
+    opacity: 0.32,
     depthWrite: false,
     blending: THREE.AdditiveBlending
   });
@@ -288,26 +307,27 @@
   var dummy = new THREE.Object3D();
   var colorTmp = new THREE.Color();
   var IDLE_COLOR = new THREE.Color(0x5c85bd);
-  var ACTIVE_COLOR = new THREE.Color(0xe0c068);
+  var ACTIVE_COLOR = new THREE.Color(0xffd166);
   var nodeState = [];
   var regionIndex = {};
 
   REGIONS.forEach(function (region, idx) {
     regionIndex[region.name] = idx;
-    var baseScale = region.hq ? 1.7 : 1;
+    var baseScale = region.hq ? 1.7 : (region.major ? 1.3 : 1);
+    var idleGlow = region.hq ? 0.9 : (region.major ? 0.6 : 0.22);
     dummy.position.copy(region.worldPos);
     dummy.scale.setScalar(prefersReduced ? baseScale : 0.001);
     dummy.updateMatrix();
     nodeMesh.setMatrixAt(idx, dummy.matrix);
-    colorTmp.copy(region.hq ? ACTIVE_COLOR : IDLE_COLOR);
+    colorTmp.copy(IDLE_COLOR).lerp(ACTIVE_COLOR, idleGlow);
     nodeMesh.setColorAt(idx, colorTmp);
     nodeState.push({
       region: region,
       baseScale: baseScale,
       curScale: prefersReduced ? baseScale : 0,
       autoTargetScale: baseScale,
-      curGlow: region.hq ? 0.9 : 0.22,
-      autoTargetGlow: region.hq ? 0.9 : 0.22,
+      curGlow: idleGlow,
+      autoTargetGlow: idleGlow,
       hovered: false
     });
   });
@@ -324,17 +344,22 @@
     var start = hqRegion.worldPos.clone();
     var end = region.worldPos.clone();
     var mid = start.clone().lerp(end, 0.5);
-    mid.z += start.distanceTo(end) * 0.16 + 0.5;
+    mid.z += start.distanceTo(end) * 0.22 + 0.1;
     var curve = new THREE.QuadraticBezierCurve3(start, mid, end);
     region.curve = curve;
-    var points = curve.getPoints(48);
+    var points = curve.getPoints(34);
     var geo = new THREE.BufferGeometry().setFromPoints(points);
-    var mat = new THREE.LineBasicMaterial({
-      color: 0xd4af37,
+    var mat = new THREE.PointsMaterial({
+      map: glowTexture,
+      color: 0xffd166,
+      size: 0.05,
+      sizeAttenuation: true,
       transparent: true,
-      opacity: prefersReduced ? 0.32 : 0
+      opacity: prefersReduced ? 0.35 : 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
     });
-    var line = new THREE.Line(geo, mat);
+    var line = new THREE.Points(geo, mat);
     linesGroup.add(line);
     curveEntries.push({ region: region, line: line });
   });
@@ -345,7 +370,7 @@
   for (var t = 0; t < PULSE_TRAIL; t++) {
     var pMat = new THREE.SpriteMaterial({
       map: glowTexture,
-      color: 0xe0c068,
+      color: 0xffd166,
       transparent: true,
       opacity: 0,
       depthWrite: false,
@@ -399,7 +424,7 @@
   var revealed = false;
   function runAssembleReveal() {
     if (prefersReduced) {
-      curveEntries.forEach(function (c) { c.line.material.opacity = 0.32; });
+      curveEntries.forEach(function (c) { c.line.material.opacity = 0.35; });
       startCycle();
       return;
     }
@@ -411,7 +436,7 @@
       assembleProgress = 1 - Math.pow(1 - p, 3);
       curveEntries.forEach(function (c, idx) {
         var lineP = Math.min(1, Math.max(0, p * 1.4 - idx * (0.4 / curveEntries.length)));
-        c.line.material.opacity = 0.32 * lineP;
+        c.line.material.opacity = 0.35 * lineP;
       });
       if (p < 1) requestAnimationFrame(step);
       else startCycle();
@@ -534,7 +559,7 @@
     for (var idx = 0; idx < nodeState.length; idx++) {
       var ns = nodeState[idx];
       var boost = ns.hovered ? 1.55 : 1;
-      var breathe = ns.region.hq && !prefersReduced ? 1 + Math.sin(t * 2.2) * 0.06 : 1;
+      var breathe = (ns.region.hq || ns.region.major) && !prefersReduced ? 1 + Math.sin(t * 2.2 + idx) * 0.06 : 1;
       var targetScale = ns.autoTargetScale * boost * breathe;
       var targetGlow = Math.min(1, ns.autoTargetGlow + (ns.hovered ? 0.55 : 0));
       if (Math.abs(ns.curScale - targetScale) > 0.0008 || Math.abs(ns.curGlow - targetGlow) > 0.0008) {
