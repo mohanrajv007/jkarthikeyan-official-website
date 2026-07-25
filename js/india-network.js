@@ -77,7 +77,7 @@
 
   /* ---------- Rasterise the silhouette image to sample dot positions + bounding box ---------- */
   var RASTER = 1024;
-  var STRIDE = 2;
+  var STRIDE = 1;
   function buildSilhouette(img) {
     var off = document.createElement("canvas");
     off.width = RASTER;
@@ -169,18 +169,33 @@
     var ctx = c.getContext("2d");
     var grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
     grad.addColorStop(0, "rgba(255,255,255,1)");
-    grad.addColorStop(0.35, "rgba(255,213,106,0.9)");
-    grad.addColorStop(1, "rgba(255,213,106,0)");
+    grad.addColorStop(0.35, "rgba(224,192,104,0.95)");
+    grad.addColorStop(1, "rgba(224,192,104,0)");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 64, 64);
     return new THREE.CanvasTexture(c);
   }
   var glowTexture = makeGlowTexture();
 
+  /* ---------- Soft wide halo texture (subtle outer glow behind the dot-map) ---------- */
+  function makeHaloTexture() {
+    var c = document.createElement("canvas");
+    c.width = c.height = 128;
+    var ctx = c.getContext("2d");
+    var grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grad.addColorStop(0, "rgba(212,175,55,0.5)");
+    grad.addColorStop(0.5, "rgba(212,175,55,0.16)");
+    grad.addColorStop(1, "rgba(212,175,55,0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  }
+  var haloTexture = makeHaloTexture();
+
   /* ---------- Dot-map point cloud ---------- */
   var rawDots = silhouette.dots;
   var totalCandidates = rawDots.length / 2;
-  var maxDots = 3500;
+  var maxDots = 5500;
   var keepEvery = Math.max(1, Math.floor(totalCandidates / maxDots));
   var finalPositions = [];
   for (var i = 0, k = 0; i < rawDots.length; i += 2, k++) {
@@ -188,7 +203,7 @@
     var jpx = rawDots[i] + (Math.random() - 0.5) * STRIDE;
     var jpy = rawDots[i + 1] + (Math.random() - 0.5) * STRIDE;
     var w = pixelToWorld(jpx, jpy);
-    finalPositions.push(w.x, w.y, (Math.random() - 0.5) * 0.35);
+    finalPositions.push(w.x, w.y, (Math.random() - 0.5) * 0.18);
   }
   var dotPositions = new Float32Array(finalPositions);
   var scatterOffsets = new Float32Array(dotPositions.length);
@@ -204,16 +219,33 @@
   dotGeo.setAttribute("position", new THREE.BufferAttribute(livePositions, 3));
   var dotMat = new THREE.PointsMaterial({
     map: glowTexture,
-    color: 0xffd56a,
-    size: 0.095,
+    color: 0xe0c068,
+    size: 0.1,
     sizeAttenuation: true,
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.94,
     depthWrite: false,
     blending: THREE.AdditiveBlending
   });
   var dotCloud = new THREE.Points(dotGeo, dotMat);
   mapGroup.add(dotCloud);
+
+  /* ---------- Subtle outer glow/halo layer behind the dot-map ---------- */
+  var haloGeo = new THREE.BufferGeometry();
+  haloGeo.setAttribute("position", dotGeo.getAttribute("position"));
+  var haloMat = new THREE.PointsMaterial({
+    map: haloTexture,
+    color: 0xd4af37,
+    size: 0.26,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0.22,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+  var dotHalo = new THREE.Points(haloGeo, haloMat);
+  dotHalo.position.z = -0.05;
+  mapGroup.add(dotHalo);
 
   /* ---------- Ambient particle field ---------- */
   var particleCount = 200;
@@ -256,7 +288,7 @@
   var dummy = new THREE.Object3D();
   var colorTmp = new THREE.Color();
   var IDLE_COLOR = new THREE.Color(0x5c85bd);
-  var ACTIVE_COLOR = new THREE.Color(0xffd56a);
+  var ACTIVE_COLOR = new THREE.Color(0xe0c068);
   var nodeState = [];
   var regionIndex = {};
 
@@ -298,9 +330,9 @@
     var points = curve.getPoints(48);
     var geo = new THREE.BufferGeometry().setFromPoints(points);
     var mat = new THREE.LineBasicMaterial({
-      color: 0xffd56a,
+      color: 0xd4af37,
       transparent: true,
-      opacity: prefersReduced ? 0.14 : 0
+      opacity: prefersReduced ? 0.32 : 0
     });
     var line = new THREE.Line(geo, mat);
     linesGroup.add(line);
@@ -313,7 +345,7 @@
   for (var t = 0; t < PULSE_TRAIL; t++) {
     var pMat = new THREE.SpriteMaterial({
       map: glowTexture,
-      color: 0xffd56a,
+      color: 0xe0c068,
       transparent: true,
       opacity: 0,
       depthWrite: false,
@@ -367,7 +399,7 @@
   var revealed = false;
   function runAssembleReveal() {
     if (prefersReduced) {
-      curveEntries.forEach(function (c) { c.line.material.opacity = 0.14; });
+      curveEntries.forEach(function (c) { c.line.material.opacity = 0.32; });
       startCycle();
       return;
     }
@@ -379,7 +411,7 @@
       assembleProgress = 1 - Math.pow(1 - p, 3);
       curveEntries.forEach(function (c, idx) {
         var lineP = Math.min(1, Math.max(0, p * 1.4 - idx * (0.4 / curveEntries.length)));
-        c.line.material.opacity = 0.14 * lineP;
+        c.line.material.opacity = 0.32 * lineP;
       });
       if (p < 1) requestAnimationFrame(step);
       else startCycle();
