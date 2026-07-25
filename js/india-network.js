@@ -342,7 +342,7 @@
   var dummy = new THREE.Object3D();
   var colorTmp = new THREE.Color();
   var IDLE_COLOR = new THREE.Color(0x5c85bd);
-  var ACTIVE_COLOR = new THREE.Color(0xffd166);
+  var ACTIVE_COLOR = new THREE.Color(0xffc947);
   var nodeState = [];
   var regionIndex = {};
 
