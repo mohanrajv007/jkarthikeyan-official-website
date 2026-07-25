@@ -89,8 +89,15 @@
     var data;
     try { data = octx.getImageData(0, 0, RASTER, RASTER).data; } catch (e) { return null; }
 
+    function isInside(x, y) {
+      if (x < 0 || y < 0 || x >= RASTER || y >= RASTER) return false;
+      return data[(y * RASTER + x) * 4 + 3] > 40;
+    }
+
+    var EDGE_PROBE = 3;
     var bbox = { minX: RASTER, minY: RASTER, maxX: 0, maxY: 0 };
     var dots = [];
+    var edgeDots = [];
     for (var y = 0; y < RASTER; y += STRIDE) {
       for (var x = 0; x < RASTER; x += STRIDE) {
         var alpha = data[(y * RASTER + x) * 4 + 3];
@@ -100,11 +107,16 @@
           if (y < bbox.minY) bbox.minY = y;
           if (y > bbox.maxY) bbox.maxY = y;
           dots.push(x, y);
+
+          if (!isInside(x - EDGE_PROBE, y) || !isInside(x + EDGE_PROBE, y) ||
+              !isInside(x, y - EDGE_PROBE) || !isInside(x, y + EDGE_PROBE)) {
+            edgeDots.push(x, y);
+          }
         }
       }
     }
     if (bbox.maxX <= bbox.minX || bbox.maxY <= bbox.minY) return null;
-    return { bbox: bbox, dots: dots };
+    return { bbox: bbox, dots: dots, edgeDots: edgeDots };
   }
 
   var indiaImg = new Image();
@@ -265,6 +277,29 @@
   var dotHalo = new THREE.Points(haloGeo, haloMat);
   dotHalo.position.z = -0.05;
   mapGroup.add(dotHalo);
+
+  /* ---------- Crisp coastline outline (bright dotted border tracing India's edge) ---------- */
+  var outlinePositions = [];
+  var rawEdge = silhouette.edgeDots || [];
+  for (var e = 0; e < rawEdge.length; e += 2) {
+    var ew = pixelToWorld(rawEdge[e], rawEdge[e + 1]);
+    outlinePositions.push(ew.x, ew.y, 0.05 + Math.random() * 0.05);
+  }
+  var outlineGeo = new THREE.BufferGeometry();
+  outlineGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(outlinePositions), 3));
+  var outlineMat = new THREE.PointsMaterial({
+    map: glowTexture,
+    color: 0xfff3d6,
+    size: 0.075,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: prefersReduced ? 1 : 0,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+  var outlineCloud = new THREE.Points(outlineGeo, outlineMat);
+  mapGroup.add(outlineCloud);
+  var OUTLINE_TARGET_OPACITY = 1;
 
   /* ---------- Ambient particle field ---------- */
   var particleCount = 200;
@@ -434,6 +469,7 @@
       if (!start) start = ts;
       var p = Math.min((ts - start) / DURATION, 1);
       assembleProgress = 1 - Math.pow(1 - p, 3);
+      outlineMat.opacity = OUTLINE_TARGET_OPACITY * assembleProgress;
       curveEntries.forEach(function (c, idx) {
         var lineP = Math.min(1, Math.max(0, p * 1.4 - idx * (0.4 / curveEntries.length)));
         c.line.material.opacity = 0.35 * lineP;
