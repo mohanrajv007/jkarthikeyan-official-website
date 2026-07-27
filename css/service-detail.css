@@ -1,7 +1,7 @@
 /* =========================================================
    J. Karthikeyan & Co. — Service detail page (additive only)
-   Scoped to pages like services-audit-advisory.html; does not
-   modify any rule in css/style.css.
+   Scoped to the 12 individual service detail pages (statutory-audit.html,
+   internal-audit.html, etc.); does not modify any rule in css/style.css.
    ========================================================= */
 
 .service-hero {
