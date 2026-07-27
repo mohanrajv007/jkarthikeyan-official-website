@@ -270,7 +270,7 @@
       localStorage.setItem(COOKIE_KEY, "declined");
       cookieBanner && cookieBanner.classList.remove("show");
     }
-  });
+  });                                                                                                   
 
   /* ---------- Chatbot (rule-based demo assistant) ---------- */
   var chatFab = document.getElementById("chatbot-fab");
