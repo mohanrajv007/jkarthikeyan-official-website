@@ -192,6 +192,154 @@
   }
   var haloTexture = makeHaloTexture();
 
+  /* ---------- Premium 3D location-pin texture ----------
+     Drawn once to an offscreen canvas and shared by every marker sprite, so
+     36 glossy pins cost one texture upload and zero per-frame raster work.
+     Glossy gradient body (#E53935), inner white lens, specular sheen, glass
+     rim-light and a soft contact shadow baked in at the tip. */
+  var PIN_TEX_W = 256, PIN_TEX_H = 340;
+  var PIN_ASPECT = PIN_TEX_H / PIN_TEX_W;
+  function makePinTexture() {
+    var c = document.createElement("canvas");
+    c.width = PIN_TEX_W;
+    c.height = PIN_TEX_H;
+    var ctx = c.getContext("2d");
+    if (!ctx) return null;
+    var cx = 128, headY = 118, R = 86, tipY = 312;
+    function deg(d) { return (d * Math.PI) / 180; }
+
+    /* soft elliptical contact shadow under the tip */
+    ctx.save();
+    ctx.translate(cx, tipY - 2);
+    ctx.scale(1, 0.3);
+    var sh = ctx.createRadialGradient(0, 0, 0, 0, 0, 56);
+    sh.addColorStop(0, "rgba(0,0,0,0.5)");
+    sh.addColorStop(0.5, "rgba(0,0,0,0.22)");
+    sh.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = sh;
+    ctx.beginPath();
+    ctx.arc(0, 0, 56, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    /* teardrop silhouette */
+    function pinPath() {
+      ctx.beginPath();
+      ctx.arc(cx, headY, R, deg(150), deg(30), false);
+      ctx.quadraticCurveTo(cx + R * 0.6, headY + R * 1.02, cx, tipY);
+      ctx.quadraticCurveTo(cx - R * 0.6, headY + R * 1.02, cx + Math.cos(deg(150)) * R, headY + Math.sin(deg(150)) * R);
+      ctx.closePath();
+    }
+
+    ctx.save();
+    pinPath();
+    ctx.clip();
+
+    var body = ctx.createLinearGradient(cx - R, headY - R, cx + R * 0.85, tipY);
+    body.addColorStop(0, "#FF6055");
+    body.addColorStop(0.22, "#EF3F38");
+    body.addColorStop(0.5, "#E53935");
+    body.addColorStop(1, "#8E1714");
+    ctx.fillStyle = body;
+    ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
+
+    /* glossy top-left highlight */
+    var gloss = ctx.createRadialGradient(cx - R * 0.46, headY - R * 0.58, 2, cx - R * 0.46, headY - R * 0.58, R * 0.95);
+    gloss.addColorStop(0, "rgba(255,255,255,0.42)");
+    gloss.addColorStop(0.4, "rgba(255,255,255,0.08)");
+    gloss.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = gloss;
+    ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
+
+    /* warm rim-light bouncing off the lower-right shoulder */
+    var rim = ctx.createRadialGradient(cx + R * 0.62, headY + R * 0.5, 4, cx + R * 0.62, headY + R * 0.5, R * 0.95);
+    rim.addColorStop(0, "rgba(255,186,150,0.3)");
+    rim.addColorStop(0.6, "rgba(255,150,120,0.08)");
+    rim.addColorStop(1, "rgba(255,150,120,0)");
+    ctx.fillStyle = rim;
+    ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
+
+    /* glass sheen sweeping across the upper body */
+    var sheen = ctx.createLinearGradient(cx - R, headY - R * 0.95, cx + R * 0.3, headY + R * 0.25);
+    sheen.addColorStop(0, "rgba(255,255,255,0.22)");
+    sheen.addColorStop(0.5, "rgba(255,255,255,0.06)");
+    sheen.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = sheen;
+    ctx.beginPath();
+    ctx.ellipse(cx - R * 0.2, headY - R * 0.5, R * 0.74, R * 0.36, deg(-22), 0, Math.PI * 2);
+    ctx.fill();
+
+    /* deep shading along the tip for volume */
+    var deep = ctx.createLinearGradient(cx, headY + R * 0.35, cx, tipY);
+    deep.addColorStop(0, "rgba(90,12,10,0)");
+    deep.addColorStop(1, "rgba(90,12,10,0.4)");
+    ctx.fillStyle = deep;
+    ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
+    ctx.restore();
+
+    /* crisp outline + bright specular arc across the crown */
+    pinPath();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(96,14,12,0.5)";
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, headY, R - 8, deg(198), deg(316), false);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(255,255,255,0.3)";
+    ctx.lineCap = "round";
+    ctx.stroke();
+
+    /* inner white lens with a soft inset shadow */
+    var lensR = R * 0.4;
+    ctx.save();
+    ctx.shadowColor = "rgba(70,8,8,0.4)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetY = 4;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cx, headY, lensR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    var lens = ctx.createLinearGradient(cx - lensR, headY - lensR, cx + lensR, headY + lensR);
+    lens.addColorStop(0, "#ffffff");
+    lens.addColorStop(0.6, "#F7F9FC");
+    lens.addColorStop(1, "#E4E9F0");
+    ctx.fillStyle = lens;
+    ctx.beginPath();
+    ctx.arc(cx, headY, lensR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, headY, lensR - 1.5, deg(200), deg(340), false);
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "rgba(255,255,255,0.9)";
+    ctx.stroke();
+
+    var tex = new THREE.CanvasTexture(c);
+    /* the canvas holds sRGB pixels — tag it so the renderer doesn't
+       double-convert and wash the red out */
+    if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 4;
+    return tex;
+  }
+  var pinTexture = makePinTexture();
+
+  /* ---------- GPS pulse-ring texture (thin golden band) ---------- */
+  function makeRingTexture() {
+    var c = document.createElement("canvas");
+    c.width = c.height = 128;
+    var ctx = c.getContext("2d");
+    var g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, "rgba(255,209,102,0)");
+    g.addColorStop(0.6, "rgba(255,209,102,0)");
+    g.addColorStop(0.79, "rgba(255,231,171,0.85)");
+    g.addColorStop(0.9, "rgba(255,209,102,0.22)");
+    g.addColorStop(1, "rgba(255,209,102,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  }
+  var ringTexture = makeRingTexture();
+
   /* ---------- Dot-map point cloud ----------
      Random (not fixed-stride) sampling: a modulo stride over the row-major
      raster beats against the shape's varying row width and produces visible
@@ -298,41 +446,136 @@
     if (REGIONS[r].hq) hqRegion = REGIONS[r];
   }
 
-  var nodeGeo = new THREE.SphereGeometry(0.13, 16, 16);
-  var nodeMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 });
-  var nodeMesh = new THREE.InstancedMesh(nodeGeo, nodeMat, REGIONS.length);
-  nodeMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(REGIONS.length * 3), 3);
-  mapGroup.add(nodeMesh);
+  /* Each region gets a screen-facing glossy pin sprite (anchored at its tip so
+     it grows out of the map), an additive golden glow sprite behind the head,
+     and shares a small pool of flat expanding GPS rings. Sprites keep the pins
+     upright and undistorted through the map's tilt/sway, and every animation is
+     a transform/opacity write only — no geometry rebuilds, no layout. */
+  var markerGroup = new THREE.Group();
+  mapGroup.add(markerGroup);
 
-  var dummy = new THREE.Object3D();
-  var colorTmp = new THREE.Color();
-  var IDLE_COLOR = new THREE.Color(0x5c85bd);
-  var ACTIVE_COLOR = new THREE.Color(0xffc947);
-  var nodeState = [];
+  var PIN_BASE_H = 1.0;
+  var APPEAR_DUR = 0.72;   /* bounce-in: 720ms */
+  var STEP_DELAY = 0.6;    /* 600ms between states */
+  var TRAVEL_DUR = 0.45;   /* fibre-optic light HQ -> state */
+  var RING_DUR = 1.0;      /* pulse ring lifetime: 1s */
+  var FLOAT_PERIOD = 5.0;  /* gentle vertical float */
+  var BREATHE_PERIOD = 4.0;
+  var CLEAR_DUR = 0.5;
+
+  var markers = [];
+  var pinSprites = [];
   var regionIndex = {};
 
   REGIONS.forEach(function (region, idx) {
     regionIndex[region.name] = idx;
-    var baseScale = region.hq ? 1.7 : (region.major ? 1.3 : 1);
-    var idleGlow = region.hq ? 0.9 : (region.major ? 0.6 : 0.22);
-    dummy.position.copy(region.worldPos);
-    dummy.scale.setScalar(prefersReduced ? baseScale : 0.001);
-    dummy.updateMatrix();
-    nodeMesh.setMatrixAt(idx, dummy.matrix);
-    colorTmp.copy(IDLE_COLOR).lerp(ACTIVE_COLOR, idleGlow);
-    nodeMesh.setColorAt(idx, colorTmp);
-    nodeState.push({
+    var sizeMul = region.hq ? 1.34 : (region.major ? 1.12 : 1);
+    var h = PIN_BASE_H * sizeMul;
+
+    var pin = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: pinTexture,
+      transparent: true,
+      opacity: prefersReduced ? 1 : 0,
+      depthTest: false,
+      depthWrite: false
+    }));
+    pin.center.set(0.5, 0);           /* anchor the tip on the state */
+    pin.scale.set(h / PIN_ASPECT, h, 1);
+    pin.position.copy(region.worldPos);
+    pin.renderOrder = 6;
+    pin.visible = !!prefersReduced;
+    pin.userData.markerIndex = idx;
+    markerGroup.add(pin);
+    pinSprites.push(pin);
+
+    var glow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: haloTexture,
+      color: 0xffc64a,
+      transparent: true,
+      opacity: 0,
+      depthTest: false,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    }));
+    glow.scale.setScalar(h * 1.5);
+    glow.position.copy(region.worldPos);
+    glow.renderOrder = 4;
+    glow.visible = !!prefersReduced;
+    markerGroup.add(glow);
+
+    markers.push({
       region: region,
-      baseScale: baseScale,
-      curScale: prefersReduced ? baseScale : 0,
-      autoTargetScale: baseScale,
-      curGlow: idleGlow,
-      autoTargetGlow: idleGlow,
-      hovered: false
+      pin: pin,
+      glow: glow,
+      h: h,
+      curPinH: h,
+      phase: prefersReduced ? "settled" : "hidden",
+      t: 0,
+      delay: 0,
+      flash: 0,
+      burst: false,
+      hovered: false,
+      hoverAmt: 0,
+      dropDist: h * 1.05,
+      phaseOff: idx * 0.7
     });
   });
-  nodeMesh.instanceMatrix.needsUpdate = true;
-  if (nodeMesh.instanceColor) nodeMesh.instanceColor.needsUpdate = true;
+
+  /* ---------- Pooled GPS pulse rings (flat in the map plane) ---------- */
+  var ringGeo = new THREE.PlaneGeometry(1, 1);
+  var ringPool = [];
+  for (var rg = 0; rg < 9; rg++) {
+    var ringMesh = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
+      map: ringTexture,
+      color: 0xffd166,
+      transparent: true,
+      opacity: 0,
+      depthTest: false,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending
+    }));
+    ringMesh.renderOrder = 2;
+    ringMesh.visible = false;
+    markerGroup.add(ringMesh);
+    ringPool.push({ mesh: ringMesh, active: false, t: 0, delay: 0, size: 1 });
+  }
+
+  function spawnRings(marker) {
+    if (prefersReduced) return;
+    var spawned = 0;
+    for (var i = 0; i < ringPool.length && spawned < 3; i++) {
+      var ring = ringPool[i];
+      if (ring.active) continue;
+      ring.active = true;
+      ring.t = 0;
+      ring.delay = spawned * 0.24;
+      ring.size = marker.h * 2.5;
+      ring.mesh.position.copy(marker.region.worldPos);
+      ring.mesh.material.opacity = 0;
+      ring.mesh.visible = true;
+      spawned++;
+    }
+  }
+
+  function updateRings(dt) {
+    for (var i = 0; i < ringPool.length; i++) {
+      var ring = ringPool[i];
+      if (!ring.active) continue;
+      if (ring.delay > 0) { ring.delay -= dt; continue; }
+      ring.t += dt / RING_DUR;
+      if (ring.t >= 1) {
+        ring.active = false;
+        ring.mesh.visible = false;
+        ring.mesh.material.opacity = 0;
+        continue;
+      }
+      var e = 1 - Math.pow(1 - ring.t, 2.2);
+      var s = ring.size * (0.3 + e * 1.05);
+      ring.mesh.scale.set(s, s, 1);
+      ring.mesh.material.opacity = 0.8 * Math.pow(1 - ring.t, 1.6);
+    }
+  }
 
   /* ---------- Connection lines (HQ -> every other region) ---------- */
   var linesGroup = new THREE.Group();
@@ -388,35 +631,87 @@
     activePulse = { region: region, t: 0 };
   }
 
-  function lightUpNode(region) {
+  function dropMarker(region) {
     var idx = regionIndex[region.name];
     if (idx === undefined) return;
-    var ns = nodeState[idx];
-    ns.autoTargetScale = ns.baseScale * 1.85;
-    ns.autoTargetGlow = 1;
-    setTimeout(function () {
-      ns.autoTargetScale = ns.baseScale;
-      ns.autoTargetGlow = region.hq ? 0.9 : 0.22;
-    }, 1500);
+    var m = markers[idx];
+    if (m.phase !== "hidden") return;
+    m.phase = "appearing";
+    m.t = 0;
+    m.burst = false;
+    m.flash = 0;
+    m.pin.visible = true;
+    m.glow.visible = true;
   }
 
-  /* ---------- Auto-cycle: every 2s, pulse HQ -> next state, forever ---------- */
-  var cycleOrder = REGIONS.filter(function (r) { return !r.hq; });
-  var cycleIndex = 0;
-  var cycleTimer = null;
-  function cycleTick() {
-    var region = cycleOrder[cycleIndex % cycleOrder.length];
-    cycleIndex++;
-    startPulse(region);
-  }
+  /* ---------- Sequential reveal cycle ----------
+     HQ lands first, then each remaining state is announced by a light pulse
+     travelling out from HQ; the pin bounces in the moment the light arrives.
+     Once every state is marked: hold 3s, clear smoothly, repeat forever.
+     Driven by accumulated frame delta (not wall clock / timers) so pausing
+     off-screen resumes exactly where it left off. */
+  var revealOrder = REGIONS.slice().sort(function (a, b) {
+    if (a.hq) return -1;
+    if (b.hq) return 1;
+    if (!hqRegion) return 0;
+    return a.worldPos.distanceTo(hqRegion.worldPos) - b.worldPos.distanceTo(hqRegion.worldPos);
+  });
+
+  var seq = { state: "idle", next: 0, timer: 0 };
   function startCycle() {
-    if (cycleTimer || prefersReduced) return;
-    cycleTick();
-    cycleTimer = setInterval(cycleTick, 2000);
+    if (prefersReduced || seq.state !== "idle") return;
+    seq.state = "revealing";
+    seq.next = 0;
+    seq.timer = 0;
   }
-  function stopCycle() {
-    clearInterval(cycleTimer);
-    cycleTimer = null;
+  function stopCycle() { /* the sequence pauses with the render loop */ }
+
+  function allMarkersHidden() {
+    for (var i = 0; i < markers.length; i++) if (markers[i].phase !== "hidden") return false;
+    return true;
+  }
+  function allMarkersSettled() {
+    for (var i = 0; i < markers.length; i++) if (markers[i].phase !== "settled") return false;
+    return true;
+  }
+
+  function beginClear() {
+    for (var i = 0; i < revealOrder.length; i++) {
+      var m = markers[regionIndex[revealOrder[i].name]];
+      if (m.phase === "hidden") continue;
+      m.phase = "clearing";
+      m.t = 0;
+      m.delay = (revealOrder.length - 1 - i) * 0.03;
+    }
+  }
+
+  function updateSequence(dt) {
+    if (seq.state === "idle") return;
+    seq.timer -= dt;
+    if (seq.state === "revealing") {
+      if (seq.next < revealOrder.length) {
+        if (seq.timer <= 0) {
+          var region = revealOrder[seq.next++];
+          if (region.hq || !region.curve) dropMarker(region);
+          else startPulse(region);
+          seq.timer = STEP_DELAY;
+        }
+      } else if (allMarkersSettled()) {
+        seq.state = "holding";
+        seq.timer = 3;
+      }
+    } else if (seq.state === "holding") {
+      if (seq.timer <= 0) {
+        beginClear();
+        seq.state = "clearing";
+      }
+    } else if (seq.state === "clearing") {
+      if (allMarkersHidden()) {
+        seq.state = "revealing";
+        seq.next = 0;
+        seq.timer = 0.5;
+      }
+    }
   }
 
   /* ---------- Scroll-triggered assembly reveal ---------- */
@@ -450,9 +745,12 @@
   var hoveredIndex = -1;
 
   function screenPosForIndex(idx) {
-    var v = nodeState[idx].region.worldPos.clone();
+    var m = markers[idx];
+    var v = m.pin.position.clone();
     mapGroup.updateMatrixWorld();
     v.applyMatrix4(mapGroup.matrixWorld);
+    /* lift the anchor to the crown of the pin so the tooltip clears it */
+    v.addScaledVector(upWorld, m.curPinH * mapGroup.scale.x);
     v.project(camera);
     var rect = canvas.getBoundingClientRect();
     return {
@@ -462,7 +760,7 @@
   }
 
   function showTooltip(idx) {
-    var region = nodeState[idx].region;
+    var region = markers[idx].region;
     var pos = screenPosForIndex(idx);
     tooltip.innerHTML =
       "<strong>" + region.name + (region.hq ? " (HQ)" : "") + "</strong>" +
@@ -482,13 +780,18 @@
       pointerNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       pointerNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(pointerNDC, camera);
-      var hits = raycaster.intersectObject(nodeMesh);
-      var newHover = hits.length ? hits[0].instanceId : -1;
+      var hits = raycaster.intersectObjects(pinSprites, false);
+      var newHover = -1;
+      for (var hi = 0; hi < hits.length; hi++) {
+        var hitIdx = hits[hi].object.userData.markerIndex;
+        /* only pins that have finished landing are hoverable */
+        if (markers[hitIdx].phase === "settled") { newHover = hitIdx; break; }
+      }
       if (newHover !== hoveredIndex) {
-        if (hoveredIndex !== -1) nodeState[hoveredIndex].hovered = false;
+        if (hoveredIndex !== -1) markers[hoveredIndex].hovered = false;
         hoveredIndex = newHover;
         if (hoveredIndex !== -1) {
-          nodeState[hoveredIndex].hovered = true;
+          markers[hoveredIndex].hovered = true;
           showTooltip(hoveredIndex);
         } else {
           hideTooltip();
@@ -498,7 +801,7 @@
     }, { passive: true });
 
     canvas.addEventListener("pointerleave", function () {
-      if (hoveredIndex !== -1) nodeState[hoveredIndex].hovered = false;
+      if (hoveredIndex !== -1) markers[hoveredIndex].hovered = false;
       hoveredIndex = -1;
       hideTooltip();
     });
@@ -519,6 +822,8 @@
   var clock = new THREE.Clock();
   var running = false;
   var animReq = null;
+  var prevElapsed = 0;
+  var seqTime = 0;
 
   function updateAssembledPositions() {
     var arr = dotGeo.attributes.position.array;
@@ -536,10 +841,10 @@
       pulseSprites.forEach(function (spr) { spr.material.opacity = 0; });
       return;
     }
-    activePulse.t += delta * 0.55;
+    activePulse.t += delta / TRAVEL_DUR;
     var tt = Math.min(activePulse.t, 1);
     pulseSprites.forEach(function (spr, idx) {
-      var trailT = tt - idx * 0.035;
+      var trailT = tt - idx * 0.05;
       if (trailT <= 0) {
         spr.material.opacity = 0;
         return;
@@ -549,34 +854,95 @@
       spr.material.opacity = (1 - idx / PULSE_TRAIL) * 0.9;
     });
     if (tt >= 1) {
-      lightUpNode(activePulse.region);
+      dropMarker(activePulse.region);
       activePulse = null;
     }
   }
 
-  function updateNodes(t) {
-    var changed = false;
-    for (var idx = 0; idx < nodeState.length; idx++) {
-      var ns = nodeState[idx];
-      var boost = ns.hovered ? 1.55 : 1;
-      var breathe = (ns.region.hq || ns.region.major) && !prefersReduced ? 1 + Math.sin(t * 2.2 + idx) * 0.06 : 1;
-      var targetScale = ns.autoTargetScale * boost * breathe;
-      var targetGlow = Math.min(1, ns.autoTargetGlow + (ns.hovered ? 0.55 : 0));
-      if (Math.abs(ns.curScale - targetScale) > 0.0008 || Math.abs(ns.curGlow - targetGlow) > 0.0008) {
-        ns.curScale += (targetScale - ns.curScale) * 0.12;
-        ns.curGlow += (targetGlow - ns.curGlow) * 0.12;
-        dummy.position.copy(ns.region.worldPos);
-        dummy.scale.setScalar(Math.max(0.001, ns.curScale));
-        dummy.updateMatrix();
-        nodeMesh.setMatrixAt(idx, dummy.matrix);
-        colorTmp.copy(IDLE_COLOR).lerp(ACTIVE_COLOR, ns.curGlow);
-        nodeMesh.setColorAt(idx, colorTmp);
-        changed = true;
+  /* ---------- Marker animation ----------
+     Screen-up in map-local space, so the bounce/float reads vertically no
+     matter how the map is tilted or swaying. */
+  var upWorld = new THREE.Vector3(0, 1, 0);
+  var upLocal = new THREE.Vector3(0, 1, 0);
+  var invQuat = new THREE.Quaternion();
+  var tmpPos = new THREE.Vector3();
+
+  function updateMarkers(dt, seqT) {
+    upWorld.set(0, 1, 0).applyQuaternion(camera.quaternion);
+    invQuat.copy(mapGroup.quaternion).invert();
+    upLocal.copy(upWorld).applyQuaternion(invQuat).normalize();
+
+    for (var i = 0; i < markers.length; i++) {
+      var m = markers[i];
+      if (m.phase === "hidden") continue;
+
+      var scale = 1, opacity = 1, rise = 0, glowMul = 1;
+
+      if (m.phase === "appearing") {
+        m.t += dt / APPEAR_DUR;
+        var p = Math.min(m.t, 1);
+        /* damped oscillation: 0 -> overshoot -> single bounce -> settle */
+        var damp = 1 - Math.exp(-6 * p) * Math.cos(p * Math.PI * 2.35);
+        scale = Math.max(0.001, damp);
+        rise = -m.dropDist * (1 - damp);
+        opacity = Math.min(1, p / 0.4);
+        glowMul = 1.1 + (1 - p) * 0.7;
+        if (!m.burst && p >= 0.5) { m.burst = true; spawnRings(m); }
+        if (p >= 1) { m.phase = "settled"; m.t = 0; m.flash = 1; }
+      } else if (m.phase === "clearing") {
+        if (m.delay > 0) {
+          m.delay -= dt;
+        } else {
+          m.t += dt / CLEAR_DUR;
+          var cp = Math.min(m.t, 1);
+          var ce = cp * cp;
+          scale = 1 - 0.4 * ce;
+          opacity = 1 - ce;
+          rise = ce * m.h * 0.3;
+          glowMul = 1 - ce * 0.6;
+          if (cp >= 1) {
+            m.phase = "hidden";
+            m.pin.visible = false;
+            m.glow.visible = false;
+            m.pin.material.opacity = 0;
+            m.glow.material.opacity = 0;
+            m.hovered = false;
+            m.hoverAmt = 0;
+            if (hoveredIndex === i) { hoveredIndex = -1; hideTooltip(); }
+            continue;
+          }
+        }
       }
-    }
-    if (changed) {
-      nodeMesh.instanceMatrix.needsUpdate = true;
-      if (nodeMesh.instanceColor) nodeMesh.instanceColor.needsUpdate = true;
+
+      if (m.phase === "settled" || (m.phase === "clearing" && m.delay > 0)) {
+        m.flash = Math.max(0, m.flash - dt / 0.7);
+        if (!prefersReduced) {
+          rise += Math.sin(seqT * (Math.PI * 2 / FLOAT_PERIOD) + m.phaseOff) * 0.055;
+          glowMul = 0.88 + 0.14 * Math.sin(seqT * (Math.PI * 2 / BREATHE_PERIOD) + m.phaseOff);
+        }
+        glowMul += m.flash * 0.95;
+      }
+
+      /* hover: grow, lift, brighten */
+      var hoverTarget = m.hovered ? 1 : 0;
+      m.hoverAmt += (hoverTarget - m.hoverAmt) * Math.min(1, dt * 10);
+      if (m.hoverAmt > 0.001) {
+        scale *= 1 + 0.14 * m.hoverAmt;
+        rise += 0.12 * m.hoverAmt;
+        glowMul += 0.55 * m.hoverAmt;
+      }
+
+      var hh = m.h * scale;
+      m.curPinH = hh;
+      m.pin.scale.set(hh / PIN_ASPECT, hh, 1);
+      m.pin.material.opacity = opacity;
+      tmpPos.copy(m.region.worldPos).addScaledVector(upLocal, rise);
+      m.pin.position.copy(tmpPos);
+
+      var gs = hh * (1.26 + 0.2 * Math.max(0, glowMul - 1));
+      m.glow.scale.set(gs, gs, 1);
+      m.glow.position.copy(tmpPos).addScaledVector(upLocal, hh * 0.64);
+      m.glow.material.opacity = Math.max(0, Math.min(1, 0.32 * glowMul * opacity));
     }
   }
 
@@ -584,7 +950,11 @@
     if (!running) { animReq = null; return; }
     animReq = requestAnimationFrame(animate);
     var t = clock.getElapsedTime();
-    var delta = clock.getDelta();
+    /* clamped own-delta: THREE.Clock's getElapsedTime already consumes the
+       frame delta, and a tab/scroll pause must not fast-forward the sequence */
+    var delta = Math.min(Math.max(t - prevElapsed, 0), 0.05);
+    prevElapsed = t;
+    if (!prefersReduced) seqTime += delta;
 
     if (assembleProgress < 1) updateAssembledPositions();
 
@@ -605,10 +975,12 @@
       mapGroup.rotation.x = BASE_TILT + curTiltX;
 
       particleField.rotation.y = t * 0.01;
+      updateSequence(delta);
       updatePulse(delta);
+      updateRings(delta);
     }
 
-    updateNodes(t);
+    updateMarkers(delta, seqTime);
 
     if (hoveredIndex !== -1) {
       var pos = screenPosForIndex(hoveredIndex);
