@@ -943,11 +943,11 @@ section { position: relative; padding: 120px 0; }
 .legal-page li { color: var(--text-muted); margin-bottom: 8px; line-height: 1.7; }
 
 /* =========================================================
-   India Network Coverage — 3D dot-map section
+   Global Network Coverage — 3D dot-map section
    ========================================================= */
 .network-section {
   position: relative;
-  background: #07131F;
+  background: #04111F;
   overflow: hidden;
   padding: 120px 0;
   scroll-margin-top: var(--nav-h);
@@ -969,12 +969,12 @@ section { position: relative; padding: 120px 0; }
   height: 640px;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: radial-gradient(80% 70% at 50% 45%, #06101A 0%, #050B14 75%);
+  background: radial-gradient(80% 70% at 50% 45%, #0D2742 0%, #071A2D 65%, #04111F 100%);
 }
 .network-visual::after {
   content: "";
   position: absolute; inset: 0; pointer-events: none; z-index: 2;
-  background: radial-gradient(60% 55% at 50% 45%, transparent 0%, rgba(5,11,20,.85) 100%);
+  background: radial-gradient(60% 55% at 50% 45%, transparent 0%, rgba(4,17,31,.85) 100%);
 }
 #network-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 1; }
 

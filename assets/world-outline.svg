@@ -1,0 +1,29 @@
+<?xml version="1.0" standalone="no"?>
+<!-- Simplified world-continent silhouette (equirectangular, viewBox 1000x500 = lon -180..180, lat 90..-90),
+     hand-built as a low-detail stylised silhouette for a glowing dot-globe render — not intended as
+     precise cartography. Used only to sample dot positions for the Global Network Coverage visual. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500">
+<g fill="#000000" stroke="none">
+<!-- North America (incl. Central America land-bridge) -->
+<path d="M42,61 69,53 139,56 236,61 278,78 319,83 347,111 319,125 300,140 292,153 283,163 278,178 268,172 259,182 250,169 231,178 208,194 181,172 156,139 153,114 139,97 111,83 69,83 Z"/>
+<!-- South America -->
+<path d="M283,163 292,180 300,200 286,222 333,222 361,250 403,264 389,306 367,319 339,347 319,375 311,403 300,389 292,361 283,292 275,264 268,220 Z"/>
+<!-- Europe (incl. Scandinavia + Italy boot) -->
+<path d="M475,131 475,150 508,150 528,163 536,155 542,147 550,139 553,133 569,153 583,150 597,133 611,119 583,111 569,97 578,83 556,69 528,61 514,78 500,108 486,117 Z"/>
+<!-- United Kingdom -->
+<path d="M486,111 483,97 492,89 500,97 503,106 Z"/>
+<!-- Africa (incl. Madagascar) -->
+<path d="M453,192 456,208 472,233 514,236 525,239 536,264 533,300 550,344 583,333 597,306 611,283 625,236 619,217 603,208 592,172 569,161 528,158 483,153 Z"/>
+<path d="M627,300 634,320 630,336 622,322 Z"/>
+<!-- Middle East -->
+<path d="M597,133 611,150 625,167 639,167 639,208 620,196 606,180 592,153 Z"/>
+<!-- India peninsula -->
+<path d="M639,167 661,181 668,200 672,220 656,236 645,214 636,190 Z"/>
+<!-- Asia (mainland + SE Asia + Russia) -->
+<path d="M597,133 625,139 639,167 681,181 700,194 722,228 744,189 764,208 786,236 792,222 806,194 839,167 861,139 889,125 903,97 944,69 972,69 999,61 944,56 889,47 778,42 722,47 667,56 625,67 597,97 Z"/>
+<!-- Australia -->
+<path d="M814,311 817,344 883,347 903,356 925,328 894,281 861,283 Z"/>
+<!-- Japan -->
+<path d="M861,161 867,156 889,150 894,139 892,125 886,131 875,153 Z"/>
+</g>
+</svg>
