@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="complianceTitle">
+<title id="complianceTitle">Corporate ROC compliance and annual filing</title>
+<defs>
+  <linearGradient id="bg6" x1="0" y1="0" x2="640" y2="400" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#2B5D8C"/>
+    <stop offset="1" stop-color="#041022"/>
+  </linearGradient>
+  <radialGradient id="glow6" cx="80%" cy="18%" r="55%">
+    <stop offset="0" stop-color="#D4AF37" stop-opacity="0.35"/>
+    <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+  </radialGradient>
+  <pattern id="dots6" width="26" height="26" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1.2" fill="#ffffff" fill-opacity="0.09"/>
+  </pattern>
+</defs>
+<rect width="640" height="400" fill="url(#bg6)"/>
+<rect width="640" height="400" fill="url(#dots6)"/>
+<circle cx="530" cy="60" r="210" fill="url(#glow6)"/>
+<circle cx="90" cy="340" r="140" fill="#66D9FF" opacity="0.06"/>
+
+<!-- Corporate building -->
+<g transform="translate(120,80)">
+  <rect x="0" y="40" width="200" height="190" fill="#0F2A4A" stroke="#E9CE7C" stroke-opacity="0.4" stroke-width="1.5"/>
+  <path d="M-10 40 L100 -6 L210 40 Z" fill="#173A5E" stroke="#E9CE7C" stroke-opacity="0.4" stroke-width="1.5"/>
+  <g fill="#E9CE7C" opacity="0.85">
+    <rect x="24" y="66" width="20" height="26" rx="2"/>
+    <rect x="60" y="66" width="20" height="26" rx="2"/>
+    <rect x="96" y="66" width="20" height="26" rx="2"/>
+    <rect x="132" y="66" width="20" height="26" rx="2"/>
+    <rect x="24" y="108" width="20" height="26" rx="2"/>
+    <rect x="60" y="108" width="20" height="26" rx="2"/>
+    <rect x="96" y="108" width="20" height="26" rx="2"/>
+    <rect x="132" y="108" width="20" height="26" rx="2"/>
+    <rect x="24" y="150" width="20" height="26" rx="2"/>
+    <rect x="60" y="150" width="20" height="26" rx="2"/>
+    <rect x="96" y="150" width="20" height="26" rx="2"/>
+    <rect x="132" y="150" width="20" height="26" rx="2"/>
+  </g>
+  <rect x="80" y="188" width="40" height="42" fill="#D4AF37"/>
+</g>
+
+<!-- Compliance document + stamp -->
+<g transform="translate(400,150)">
+  <rect x="0" y="0" width="150" height="180" rx="12" fill="#FDFBF6"/>
+  <rect x="20" y="24" width="90" height="9" rx="4.5" fill="#2B5D8C"/>
+  <rect x="20" y="46" width="110" height="6" rx="3" fill="#C7D1DC"/>
+  <rect x="20" y="62" width="90" height="6" rx="3" fill="#C7D1DC"/>
+  <rect x="20" y="78" width="110" height="6" rx="3" fill="#C7D1DC"/>
+  <g transform="translate(102,132) rotate(-18)">
+    <circle r="34" fill="none" stroke="#D4AF37" stroke-width="4"/>
+    <circle r="34" fill="#D4AF37" opacity="0.12"/>
+    <path d="M-14 0l10 10 20-22" fill="none" stroke="#D4AF37" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</g>
+</svg>

@@ -263,6 +263,146 @@
   }
   var ringTexture = makeRingTexture();
 
+  /* ---------- Premium 3D location-pin texture ----------
+     Drawn once to an offscreen canvas and shared by every marker sprite:
+     glossy gradient body (#E53935), inner white lens, specular sheen, glass
+     rim-light and a soft contact shadow baked in at the tip. Google/Apple
+     Maps-style, not the map's own cyan theme — this is the "state marker",
+     the map underneath is untouched. */
+  var PIN_TEX_W = 256, PIN_TEX_H = 340;
+  var PIN_ASPECT = PIN_TEX_H / PIN_TEX_W;
+  function makePinTexture() {
+    var c = document.createElement("canvas");
+    c.width = PIN_TEX_W;
+    c.height = PIN_TEX_H;
+    var ctx = c.getContext("2d");
+    if (!ctx) return null;
+    var cx = 128, headY = 118, R = 86, tipY = 312;
+    function deg(d) { return (d * Math.PI) / 180; }
+
+    ctx.save();
+    ctx.translate(cx, tipY - 2);
+    ctx.scale(1, 0.3);
+    var sh = ctx.createRadialGradient(0, 0, 0, 0, 0, 56);
+    sh.addColorStop(0, "rgba(0,0,0,0.5)");
+    sh.addColorStop(0.5, "rgba(0,0,0,0.22)");
+    sh.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = sh;
+    ctx.beginPath();
+    ctx.arc(0, 0, 56, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    function pinPath() {
+      ctx.beginPath();
+      ctx.arc(cx, headY, R, deg(150), deg(30), false);
+      ctx.quadraticCurveTo(cx + R * 0.6, headY + R * 1.02, cx, tipY);
+      ctx.quadraticCurveTo(cx - R * 0.6, headY + R * 1.02, cx + Math.cos(deg(150)) * R, headY + Math.sin(deg(150)) * R);
+      ctx.closePath();
+    }
+
+    ctx.save();
+    pinPath();
+    ctx.clip();
+
+    var body = ctx.createLinearGradient(cx - R, headY - R, cx + R * 0.85, tipY);
+    body.addColorStop(0, "#FF6055");
+    body.addColorStop(0.22, "#EF3F38");
+    body.addColorStop(0.5, "#E53935");
+    body.addColorStop(1, "#8E1714");
+    ctx.fillStyle = body;
+    ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
+
+    var gloss = ctx.createRadialGradient(cx - R * 0.46, headY - R * 0.58, 2, cx - R * 0.46, headY - R * 0.58, R * 0.95);
+    gloss.addColorStop(0, "rgba(255,255,255,0.42)");
+    gloss.addColorStop(0.4, "rgba(255,255,255,0.08)");
+    gloss.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = gloss;
+    ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
+
+    var rim = ctx.createRadialGradient(cx + R * 0.62, headY + R * 0.5, 4, cx + R * 0.62, headY + R * 0.5, R * 0.95);
+    rim.addColorStop(0, "rgba(255,209,102,0.32)");
+    rim.addColorStop(0.6, "rgba(255,209,102,0.08)");
+    rim.addColorStop(1, "rgba(255,209,102,0)");
+    ctx.fillStyle = rim;
+    ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
+
+    var sheen = ctx.createLinearGradient(cx - R, headY - R * 0.95, cx + R * 0.3, headY + R * 0.25);
+    sheen.addColorStop(0, "rgba(255,255,255,0.22)");
+    sheen.addColorStop(0.5, "rgba(255,255,255,0.06)");
+    sheen.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = sheen;
+    ctx.beginPath();
+    ctx.ellipse(cx - R * 0.2, headY - R * 0.5, R * 0.74, R * 0.36, deg(-22), 0, Math.PI * 2);
+    ctx.fill();
+
+    var deep = ctx.createLinearGradient(cx, headY + R * 0.35, cx, tipY);
+    deep.addColorStop(0, "rgba(90,12,10,0)");
+    deep.addColorStop(1, "rgba(90,12,10,0.4)");
+    ctx.fillStyle = deep;
+    ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
+    ctx.restore();
+
+    pinPath();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(96,14,12,0.5)";
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, headY, R - 8, deg(198), deg(316), false);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(255,255,255,0.3)";
+    ctx.lineCap = "round";
+    ctx.stroke();
+
+    var lensR = R * 0.4;
+    ctx.save();
+    ctx.shadowColor = "rgba(70,8,8,0.4)";
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetY = 4;
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cx, headY, lensR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    var lens = ctx.createLinearGradient(cx - lensR, headY - lensR, cx + lensR, headY + lensR);
+    lens.addColorStop(0, "#ffffff");
+    lens.addColorStop(0.6, "#F7F9FC");
+    lens.addColorStop(1, "#E4E9F0");
+    ctx.fillStyle = lens;
+    ctx.beginPath();
+    ctx.arc(cx, headY, lensR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, headY, lensR - 1.5, deg(200), deg(340), false);
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "rgba(255,255,255,0.9)";
+    ctx.stroke();
+
+    var tex = new THREE.CanvasTexture(c);
+    if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 4;
+    return tex;
+  }
+  var pinTexture = makePinTexture();
+
+  /* ---------- Neutral (untinted) glow texture for the pin's golden halo —
+     kept separate from the map's own cyan haloTexture so the marker glow
+     tints to pure gold rather than mixing with the map's palette. ---------- */
+  function makeGoldGlowTexture() {
+    var c = document.createElement("canvas");
+    c.width = c.height = 128;
+    var ctx = c.getContext("2d");
+    var grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grad.addColorStop(0, "rgba(255,255,255,0.9)");
+    grad.addColorStop(0.35, "rgba(255,255,255,0.55)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  }
+  var goldGlowTexture = makeGoldGlowTexture();
+  var GOLD = 0xffd166;
+
   /* ---------- Interior particle fill (sparse, dim — texture, not mass) ---------- */
   var rawInterior = silhouette.interior;
   var totalInterior = rawInterior.length / 2;
@@ -399,11 +539,11 @@
   var markerGroup = new THREE.Group();
   mapGroup.add(markerGroup);
 
-  var NODE_BASE_SIZE = 0.2;
-  var APPEAR_DUR = 0.65;
-  var STEP_DELAY = 0.42;
-  var TRAVEL_DUR = 0.5;
-  var RING_DUR = 1.0;
+  var PIN_BASE_H = 0.85;
+  var APPEAR_DUR = 0.7;    /* bounce-in: 700ms (spec: 600-800ms) */
+  var STEP_DELAY = 0.55;   /* delay between states: 550ms (spec: 400-700ms) */
+  var TRAVEL_DUR = 0.42;   /* must stay < STEP_DELAY so pulses never overlap/abandon */
+  var RING_DUR = 1.0;      /* pulse duration: 1s */
   var FLOAT_PERIOD = 5.0;
   var BREATHE_PERIOD = 4.0;
   var CLEAR_DUR = 0.4;
@@ -415,36 +555,35 @@
 
   REGIONS.forEach(function (region, idx) {
     regionIndex[region.name] = idx;
-    var sizeMul = region.hq ? 1.55 : (region.major ? 1.22 : 1);
-    var size = NODE_BASE_SIZE * sizeMul;
+    var sizeMul = region.hq ? 1.4 : (region.major ? 1.15 : 1);
+    var h = PIN_BASE_H * sizeMul;
 
-    var orb = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: orbTexture,
-      color: COL_NODE,
+    var pin = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: pinTexture,
       transparent: true,
       opacity: prefersReduced ? 1 : 0,
       depthTest: false,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending
+      depthWrite: false
     }));
-    orb.scale.setScalar(prefersReduced ? size : 0.001);
-    orb.position.copy(region.worldPos);
-    orb.renderOrder = 6;
-    orb.visible = !!prefersReduced;
-    orb.userData.markerIndex = idx;
-    markerGroup.add(orb);
-    orbSprites.push(orb);
+    pin.center.set(0.5, 0);          /* anchor the tip on the state, so it grows upward out of position */
+    pin.scale.set(prefersReduced ? h / PIN_ASPECT : 0.001, prefersReduced ? h : 0.001, 1);
+    pin.position.copy(region.worldPos);
+    pin.renderOrder = 6;
+    pin.visible = !!prefersReduced;
+    pin.userData.markerIndex = idx;
+    markerGroup.add(pin);
+    orbSprites.push(pin);
 
     var glow = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: haloTexture,
-      color: region.hq ? COL_PRIMARY : COL_SECONDARY,
+      map: goldGlowTexture,
+      color: GOLD,
       transparent: true,
       opacity: 0,
       depthTest: false,
       depthWrite: false,
       blending: THREE.AdditiveBlending
     }));
-    glow.scale.setScalar(size * 3.4);
+    glow.scale.setScalar(h * 1.5);
     glow.position.copy(region.worldPos);
     glow.renderOrder = 4;
     glow.visible = !!prefersReduced;
@@ -452,9 +591,11 @@
 
     markers.push({
       region: region,
-      orb: orb,
+      orb: pin,
       glow: glow,
-      size: size,
+      h: h,
+      curPinH: h,
+      dropDist: h * 1.05,
       phase: prefersReduced ? "settled" : "hidden",
       t: 0,
       delay: 0,
@@ -472,7 +613,7 @@
   for (var rg = 0; rg < 9; rg++) {
     var ringMesh = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
       map: ringTexture,
-      color: COL_PRIMARY,
+      color: GOLD,
       transparent: true,
       opacity: 0,
       depthTest: false,
@@ -489,13 +630,13 @@
   function spawnRings(marker) {
     if (prefersReduced) return;
     var spawned = 0;
-    for (var i = 0; i < ringPool.length && spawned < 2; i++) {
+    for (var i = 0; i < ringPool.length && spawned < 3; i++) {
       var ring = ringPool[i];
       if (ring.active) continue;
       ring.active = true;
       ring.t = 0;
       ring.delay = spawned * 0.22;
-      ring.size = marker.size * 6;
+      ring.size = marker.h * 5.5;
       ring.mesh.position.copy(marker.region.worldPos);
       ring.mesh.material.opacity = 0;
       ring.mesh.visible = true;
@@ -540,7 +681,7 @@
     var geo = new THREE.BufferGeometry().setFromPoints(points);
     var mat = new THREE.PointsMaterial({
       map: glowTexture,
-      color: COL_LINE,
+      color: GOLD,
       size: 0.045,
       sizeAttenuation: true,
       transparent: true,
@@ -559,7 +700,7 @@
   for (var t = 0; t < PULSE_TRAIL; t++) {
     var pMat = new THREE.SpriteMaterial({
       map: glowTexture,
-      color: 0xeaf9ff,
+      color: 0xffe9b3,
       transparent: true,
       opacity: 0,
       depthWrite: false,
@@ -600,9 +741,13 @@
   var autoLabelTimer = null;
 
   function screenPosForIndex(idx) {
-    var v = markers[idx].orb.position.clone();
+    var m = markers[idx];
+    var v = m.orb.position.clone();
     mapGroup.updateMatrixWorld();
     v.applyMatrix4(mapGroup.matrixWorld);
+    /* lift the anchor to the crown of the pin so the tooltip clears it */
+    var up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+    v.addScaledVector(up, m.curPinH * mapGroup.scale.x);
     v.project(camera);
     var rect = canvas.getBoundingClientRect();
     return {
@@ -852,11 +997,14 @@
       if (m.phase === "appearing") {
         m.t += dt / APPEAR_DUR;
         var p = Math.min(m.t, 1);
-        var damp = 1 - Math.exp(-6 * p) * Math.cos(p * Math.PI * 1.5);
+        /* damped oscillation: 0 -> overshoot -> single bounce -> settle,
+           starting below its final position and moving up into place */
+        var damp = 1 - Math.exp(-6 * p) * Math.cos(p * Math.PI * 2.2);
         scale = Math.max(0.001, damp);
+        rise = -m.dropDist * (1 - damp);
         opacity = Math.min(1, p / 0.35);
         glowMul = 1.15 + (1 - p) * 0.7;
-        if (!m.burst && p >= 0.4) { m.burst = true; spawnRings(m); }
+        if (!m.burst && p >= 0.45) { m.burst = true; spawnRings(m); }
         if (p >= 1) { m.phase = "settled"; m.t = 0; m.flash = 1; }
       } else if (m.phase === "clearing") {
         if (m.delay > 0) {
@@ -899,16 +1047,17 @@
         glowMul += 0.55 * m.hoverAmt;
       }
 
-      var s = m.size * scale;
-      m.orb.scale.setScalar(Math.max(0.001, s));
+      var hh = m.h * scale;
+      m.curPinH = hh;
+      m.orb.scale.set(hh / PIN_ASPECT, hh, 1);
       m.orb.material.opacity = opacity;
       tmpPos.copy(m.region.worldPos).addScaledVector(upLocal, rise);
       m.orb.position.copy(tmpPos);
 
-      var gs = m.size * (2.6 + 1.3 * Math.max(0, glowMul - 1)) * scale;
+      var gs = m.h * (1.5 + 0.7 * Math.max(0, glowMul - 1)) * scale;
       m.glow.scale.set(gs, gs, 1);
-      m.glow.position.copy(tmpPos);
-      m.glow.material.opacity = Math.max(0, Math.min(1, 0.38 * glowMul * opacity));
+      m.glow.position.copy(tmpPos).addScaledVector(upLocal, hh * 0.62);
+      m.glow.material.opacity = Math.max(0, Math.min(1, 0.42 * glowMul * opacity));
     }
   }
 

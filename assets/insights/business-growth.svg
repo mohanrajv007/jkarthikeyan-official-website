@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="growthTitle">
+<title id="growthTitle">Startup financial planning and business growth chart</title>
+<defs>
+  <linearGradient id="bg5" x1="0" y1="0" x2="640" y2="400" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#2B5D8C"/>
+    <stop offset="1" stop-color="#041022"/>
+  </linearGradient>
+  <radialGradient id="glow5" cx="20%" cy="85%" r="55%">
+    <stop offset="0" stop-color="#D4AF37" stop-opacity="0.32"/>
+    <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+  </radialGradient>
+  <pattern id="dots5" width="26" height="26" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1.2" fill="#ffffff" fill-opacity="0.09"/>
+  </pattern>
+</defs>
+<rect width="640" height="400" fill="url(#bg5)"/>
+<rect width="640" height="400" fill="url(#dots5)"/>
+<circle cx="120" cy="340" r="220" fill="url(#glow5)"/>
+<circle cx="560" cy="70" r="130" fill="#66D9FF" opacity="0.07"/>
+
+<!-- Growth bars -->
+<g transform="translate(150,330)" fill="#0F2A4A" stroke="#E9CE7C" stroke-opacity="0.4" stroke-width="1.5">
+  <rect x="0" y="-60" width="46" height="60" rx="6"/>
+  <rect x="62" y="-100" width="46" height="100" rx="6"/>
+  <rect x="124" y="-150" width="46" height="150" rx="6" fill="#173A5E"/>
+  <rect x="186" y="-210" width="46" height="210" rx="6" fill="#D4AF37" stroke="none"/>
+</g>
+
+<!-- Ascending arrow line -->
+<path d="M150 300 L212 260 L274 210 L336 150 L398 96" fill="none" stroke="#E9CE7C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<g transform="translate(398,96)">
+  <circle r="12" fill="#FDFBF6"/>
+</g>
+<path d="M398 96 l38 -6 -8 38 z" fill="none"/>
+<path d="M370 60 L436 60 L436 118" fill="none" stroke="#E9CE7C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,0)"/>
+<path d="M398 96 L436 60" fill="none" stroke="#E9CE7C" stroke-width="5" stroke-linecap="round"/>
+
+<!-- Checklist card -->
+<g transform="translate(440,170)">
+  <rect x="0" y="0" width="150" height="120" rx="12" fill="#FDFBF6"/>
+  <rect x="18" y="18" width="14" height="14" rx="4" fill="none" stroke="#8AA0B8" stroke-width="2"/>
+  <path d="M20 25l4 4 8-9" fill="none" stroke="#3CA36B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="42" y="20" width="90" height="7" rx="3.5" fill="#C7D1DC"/>
+  <rect x="18" y="46" width="14" height="14" rx="4" fill="#D4AF37"/>
+  <rect x="42" y="48" width="70" height="7" rx="3.5" fill="#C7D1DC"/>
+  <rect x="18" y="74" width="14" height="14" rx="4" fill="none" stroke="#8AA0B8" stroke-width="2"/>
+  <rect x="42" y="76" width="80" height="7" rx="3.5" fill="#C7D1DC"/>
+  <rect x="18" y="96" width="60" height="10" rx="5" fill="#2B5D8C"/>
+</g>
+</svg>

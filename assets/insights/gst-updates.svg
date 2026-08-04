@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="gstTitle">
+<title id="gstTitle">GST return filing and compliance documents</title>
+<defs>
+  <linearGradient id="bg1" x1="0" y1="0" x2="640" y2="400" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#2B5D8C"/>
+    <stop offset="1" stop-color="#041022"/>
+  </linearGradient>
+  <radialGradient id="glow1" cx="82%" cy="14%" r="55%">
+    <stop offset="0" stop-color="#D4AF37" stop-opacity="0.38"/>
+    <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+  </radialGradient>
+  <pattern id="dots1" width="26" height="26" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1.2" fill="#ffffff" fill-opacity="0.09"/>
+  </pattern>
+</defs>
+<rect width="640" height="400" fill="url(#bg1)"/>
+<rect width="640" height="400" fill="url(#dots1)"/>
+<circle cx="540" cy="55" r="210" fill="url(#glow1)"/>
+<circle cx="70" cy="360" r="140" fill="#66D9FF" opacity="0.06"/>
+
+<!-- Document stack -->
+<g transform="translate(150,88)">
+  <rect x="24" y="24" width="190" height="230" rx="14" fill="#0F2A4A" opacity="0.55"/>
+  <rect x="10" y="8" width="190" height="230" rx="14" fill="#0B203A" stroke="#E9CE7C" stroke-opacity="0.35" stroke-width="1.5"/>
+  <rect x="0" y="0" width="190" height="230" rx="14" fill="#FDFBF6"/>
+  <rect x="26" y="34" width="120" height="12" rx="6" fill="#2B5D8C"/>
+  <rect x="26" y="60" width="138" height="7" rx="3.5" fill="#B9C6D6"/>
+  <rect x="26" y="78" width="110" height="7" rx="3.5" fill="#B9C6D6"/>
+  <rect x="26" y="96" width="138" height="7" rx="3.5" fill="#B9C6D6"/>
+  <rect x="26" y="122" width="138" height="1.5" fill="#D9E0E8"/>
+  <rect x="26" y="140" width="90" height="7" rx="3.5" fill="#B9C6D6"/>
+  <rect x="26" y="158" width="70" height="7" rx="3.5" fill="#B9C6D6"/>
+  <circle cx="150" cy="190" r="34" fill="#D4AF37"/>
+  <text x="150" y="199" font-family="Poppins, Arial, sans-serif" font-size="24" font-weight="700" fill="#2B5D8C" text-anchor="middle">%</text>
+</g>
+
+<!-- Check seal -->
+<g transform="translate(400,235)">
+  <circle cx="0" cy="0" r="46" fill="#0B203A" stroke="#D4AF37" stroke-width="2.5"/>
+  <path d="M-18 1l12 12 24-26" fill="none" stroke="#E9CE7C" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g transform="translate(400,235)" opacity="0.5">
+  <circle cx="0" cy="0" r="58" fill="none" stroke="#E9CE7C" stroke-width="1.5" stroke-dasharray="3 7"/>
+</g>
+</svg>

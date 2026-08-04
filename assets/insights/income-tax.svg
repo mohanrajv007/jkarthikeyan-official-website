@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="taxTitle">
+<title id="taxTitle">Income tax regime comparison and planning</title>
+<defs>
+  <linearGradient id="bg2" x1="0" y1="0" x2="640" y2="400" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#2B5D8C"/>
+    <stop offset="1" stop-color="#041022"/>
+  </linearGradient>
+  <radialGradient id="glow2" cx="18%" cy="18%" r="55%">
+    <stop offset="0" stop-color="#D4AF37" stop-opacity="0.35"/>
+    <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+  </radialGradient>
+  <pattern id="dots2" width="26" height="26" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1.2" fill="#ffffff" fill-opacity="0.09"/>
+  </pattern>
+</defs>
+<rect width="640" height="400" fill="url(#bg2)"/>
+<rect width="640" height="400" fill="url(#dots2)"/>
+<circle cx="110" cy="70" r="200" fill="url(#glow2)"/>
+<circle cx="560" cy="340" r="150" fill="#66D9FF" opacity="0.06"/>
+
+<!-- Balance scale: old vs new regime -->
+<g transform="translate(320,80)" stroke="#E9CE7C" stroke-width="5" stroke-linecap="round" fill="none">
+  <line x1="0" y1="0" x2="0" y2="210"/>
+  <line x1="-140" y1="30" x2="140" y2="30"/>
+  <line x1="-140" y1="30" x2="-140" y2="95"/>
+  <line x1="140" y1="30" x2="140" y2="95"/>
+  <path d="M-190 95a50 34 0 00100 0z" fill="#0B203A"/>
+  <path d="M90 95a50 34 0 00100 0z" fill="#0B203A"/>
+</g>
+<rect x="278" y="280" width="84" height="20" rx="10" transform="translate(320,80)" fill="#0B203A" stroke="#E9CE7C" stroke-width="3"/>
+
+<!-- Left pan label: OLD -->
+<text x="180" y="220" font-family="Poppins, Arial, sans-serif" font-size="18" font-weight="700" fill="#FDFBF6" text-anchor="middle" opacity="0.9">OLD</text>
+<!-- Right pan label: NEW -->
+<text x="460" y="220" font-family="Poppins, Arial, sans-serif" font-size="18" font-weight="700" fill="#D4AF37" text-anchor="middle">NEW</text>
+
+<!-- Rupee coin -->
+<g transform="translate(460,290)">
+  <circle r="30" fill="#D4AF37"/>
+  <text x="0" y="9" font-family="Poppins, Arial, sans-serif" font-size="26" font-weight="700" fill="#2B5D8C" text-anchor="middle">₹</text>
+</g>
+<g transform="translate(180,290)">
+  <circle r="30" fill="#0F2A4A" stroke="#E9CE7C" stroke-width="2"/>
+  <text x="0" y="9" font-family="Poppins, Arial, sans-serif" font-size="26" font-weight="700" fill="#E9CE7C" text-anchor="middle">₹</text>
+</g>
+</svg>

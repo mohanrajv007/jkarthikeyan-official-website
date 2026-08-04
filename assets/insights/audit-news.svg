@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="auditTitle">
+<title id="auditTitle">Audit standards review and ledger inspection</title>
+<defs>
+  <linearGradient id="bg3" x1="0" y1="0" x2="640" y2="400" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#2B5D8C"/>
+    <stop offset="1" stop-color="#041022"/>
+  </linearGradient>
+  <radialGradient id="glow3" cx="80%" cy="80%" r="55%">
+    <stop offset="0" stop-color="#D4AF37" stop-opacity="0.32"/>
+    <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+  </radialGradient>
+  <pattern id="dots3" width="26" height="26" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1.2" fill="#ffffff" fill-opacity="0.09"/>
+  </pattern>
+</defs>
+<rect width="640" height="400" fill="url(#bg3)"/>
+<rect width="640" height="400" fill="url(#dots3)"/>
+<circle cx="520" cy="330" r="220" fill="url(#glow3)"/>
+<circle cx="90" cy="60" r="130" fill="#66D9FF" opacity="0.06"/>
+
+<!-- Ledger sheet -->
+<g transform="translate(180,90)">
+  <rect x="0" y="0" width="230" height="230" rx="14" fill="#FDFBF6"/>
+  <rect x="0" y="0" width="230" height="44" rx="14" fill="#2B5D8C"/>
+  <rect x="0" y="30" width="230" height="14" fill="#2B5D8C"/>
+  <text x="20" y="29" font-family="Poppins, Arial, sans-serif" font-size="15" font-weight="700" fill="#FDFBF6">Audit Checklist</text>
+  <g font-family="Poppins, Arial, sans-serif" font-size="13" fill="#2B5D8C">
+    <rect x="20" y="68" width="16" height="16" rx="4" fill="none" stroke="#8AA0B8" stroke-width="2"/>
+    <path d="M23 76l4 4 8-9" fill="none" stroke="#3CA36B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="46" y="72" width="150" height="8" rx="4" fill="#C7D1DC"/>
+
+    <rect x="20" y="102" width="16" height="16" rx="4" fill="none" stroke="#8AA0B8" stroke-width="2"/>
+    <path d="M23 110l4 4 8-9" fill="none" stroke="#3CA36B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="46" y="106" width="120" height="8" rx="4" fill="#C7D1DC"/>
+
+    <rect x="20" y="136" width="16" height="16" rx="4" fill="#D4AF37"/>
+    <rect x="46" y="140" width="150" height="8" rx="4" fill="#C7D1DC"/>
+
+    <rect x="20" y="170" width="16" height="16" rx="4" fill="none" stroke="#8AA0B8" stroke-width="2"/>
+    <rect x="46" y="174" width="100" height="8" rx="4" fill="#C7D1DC"/>
+  </g>
+</g>
+
+<!-- Magnifying glass -->
+<g transform="translate(420,190)">
+  <circle r="62" fill="none" stroke="#E9CE7C" stroke-width="8"/>
+  <circle r="62" fill="#2B5D8C" opacity="0.18"/>
+  <line x1="44" y1="44" x2="92" y2="92" stroke="#E9CE7C" stroke-width="10" stroke-linecap="round"/>
+  <path d="M-16 -8l10 10 22-24" fill="none" stroke="#FDFBF6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

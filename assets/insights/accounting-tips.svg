@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="accTitle">
+<title id="accTitle">Bookkeeping ledger and financial record keeping</title>
+<defs>
+  <linearGradient id="bg4" x1="0" y1="0" x2="640" y2="400" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#2B5D8C"/>
+    <stop offset="1" stop-color="#041022"/>
+  </linearGradient>
+  <radialGradient id="glow4" cx="85%" cy="20%" r="55%">
+    <stop offset="0" stop-color="#66D9FF" stop-opacity="0.22"/>
+    <stop offset="1" stop-color="#66D9FF" stop-opacity="0"/>
+  </radialGradient>
+  <pattern id="dots4" width="26" height="26" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1.2" fill="#ffffff" fill-opacity="0.09"/>
+  </pattern>
+</defs>
+<rect width="640" height="400" fill="url(#bg4)"/>
+<rect width="640" height="400" fill="url(#dots4)"/>
+<circle cx="540" cy="70" r="200" fill="url(#glow4)"/>
+<circle cx="80" cy="350" r="140" fill="#D4AF37" opacity="0.08"/>
+
+<!-- Open ledger book -->
+<g transform="translate(150,110)">
+  <path d="M0 12 Q95 -14 190 12 V214 Q95 188 0 214 Z" fill="#FDFBF6"/>
+  <path d="M190 12 Q285 -14 380 12 V214 Q285 188 190 214 Z" fill="#F1EDE3"/>
+  <path d="M190 12 V214" stroke="#C7BFA8" stroke-width="2"/>
+  <g stroke="#B9C6D6" stroke-width="3" stroke-linecap="round">
+    <line x1="24" y1="52" x2="150" y2="40"/>
+    <line x1="24" y1="80" x2="150" y2="70"/>
+    <line x1="24" y1="108" x2="150" y2="100"/>
+    <line x1="24" y1="136" x2="150" y2="130"/>
+  </g>
+  <g stroke="#D9CFAE" stroke-width="3" stroke-linecap="round">
+    <line x1="228" y1="40" x2="356" y2="52"/>
+    <line x1="228" y1="70" x2="356" y2="80"/>
+    <line x1="228" y1="100" x2="356" y2="108"/>
+  </g>
+  <rect x="228" y="128" width="90" height="14" rx="7" fill="#D4AF37"/>
+</g>
+
+<!-- Pen -->
+<g transform="translate(430,120) rotate(35)">
+  <rect x="-8" y="0" width="16" height="140" rx="8" fill="#0F2A4A" stroke="#E9CE7C" stroke-width="2"/>
+  <path d="M-8 0 L0 -26 L8 0 Z" fill="#D4AF37"/>
+</g>
+
+<!-- Small rising bars -->
+<g transform="translate(470,300)" fill="#D4AF37">
+  <rect x="0" y="-30" width="16" height="30" rx="3"/>
+  <rect x="24" y="-50" width="16" height="50" rx="3" fill="#E9CE7C"/>
+  <rect x="48" y="-70" width="16" height="70" rx="3" fill="#FDFBF6"/>
+</g>
+</svg>
