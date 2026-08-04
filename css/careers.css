@@ -1,0 +1,81 @@
+/* =========================================================
+   J. Karthikeyan & Co. — Careers page (additive only)
+   Scoped to careers.html. Reuses existing tokens/components
+   (service-hero, feature-card, timeline, faq-list, form-field,
+   final-cta) from style.css/service-detail.css — this file only
+   adds the few component types that don't already exist:
+   job listing cards, the "Life at the Firm" gallery tiles, and
+   the résumé file-upload control.
+   ========================================================= */
+
+/* ---------- Job openings ---------- */
+.jobs-grid { display: flex; flex-direction: column; gap: 18px; }
+.job-card {
+  padding: 28px 32px; border-radius: var(--radius-lg);
+  background: var(--bg); border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s var(--ease);
+  display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+}
+.job-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--royal); }
+.job-card .job-main { flex: 1; min-width: 260px; }
+.job-card h3 { font-size: 18px; margin-bottom: 10px; }
+.job-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.job-meta span {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+  color: var(--royal); background: var(--bg-alt); border: 1px solid var(--border);
+  padding: 5px 12px; border-radius: var(--radius-pill);
+}
+.job-meta svg { width: 13px; height: 13px; }
+.job-card p { font-size: 14px; margin: 0; max-width: 620px; }
+.job-card .btn { flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  .job-card { padding: 24px; flex-direction: column; align-items: stretch; }
+  .job-card .btn { width: 100%; }
+}
+
+/* ---------- Life at the firm (placeholder gallery — swap for real
+   photography when available; kept as on-brand gradient tiles rather
+   than stock imagery in the meantime) ---------- */
+.life-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.life-tile {
+  aspect-ratio: 4/3; border-radius: var(--radius-lg); background: var(--grad-navy);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  text-align: center; padding: 20px; position: relative; overflow: hidden;
+  box-shadow: var(--shadow-sm); transition: transform .4s var(--ease), box-shadow .4s var(--ease);
+}
+.life-tile:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+.life-tile::before {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(70% 70% at 30% 20%, rgba(212,175,55,.16), transparent 60%);
+}
+.life-tile .icon-wrap {
+  position: relative; width: 54px; height: 54px; border-radius: 50%;
+  background: rgba(212,175,55,.15); border: 1px solid rgba(212,175,55,.4);
+  display: flex; align-items: center; justify-content: center; color: var(--gold-soft);
+}
+.life-tile .icon-wrap svg { width: 24px; height: 24px; }
+.life-tile span { position: relative; color: var(--text-inverse); font-family: var(--font-head); font-weight: 600; font-size: 14.5px; }
+
+@media (max-width: 860px) { .life-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .life-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Résumé upload control ---------- */
+.file-upload { position: relative; }
+.file-upload input[type="file"] {
+  position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
+}
+.file-upload .file-drop {
+  display: flex; align-items: center; gap: 12px; padding: 13px 16px;
+  background: rgba(255,255,255,.06); border: 1px dashed rgba(255,255,255,.3);
+  border-radius: var(--radius-sm); color: rgba(255,255,255,.55); font-size: 13.5px;
+  transition: border-color .3s var(--ease), background .3s var(--ease), color .3s var(--ease);
+}
+.file-upload .file-drop svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--gold-soft); }
+.file-upload:hover .file-drop { border-color: var(--gold); background: rgba(255,255,255,.1); }
+.file-upload.has-file .file-drop { color: #fff; border-style: solid; border-color: var(--gold); }
+
+/* Light variant, for use inside .form-light (matches contact.html's form theme) */
+.form-light .file-upload .file-drop { background: var(--bg-alt); border-color: var(--border-strong); color: var(--text-muted); }
+.form-light .file-upload:hover .file-drop { border-color: var(--royal); background: var(--white); }
+.form-light .file-upload.has-file .file-drop { color: var(--text); border-color: var(--royal); }
