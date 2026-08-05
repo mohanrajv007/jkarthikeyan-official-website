@@ -321,7 +321,7 @@
     ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
 
     var rim = ctx.createRadialGradient(cx + R * 0.62, headY + R * 0.5, 4, cx + R * 0.62, headY + R * 0.5, R * 0.95);
-    rim.addColorStop(0, "rgba(255,209,102,0.32)");
+    rim.addColorStop(0, "rgba(251, 207, 105, 0.32)");
     rim.addColorStop(0.6, "rgba(255,209,102,0.08)");
     rim.addColorStop(1, "rgba(255,209,102,0)");
     ctx.fillStyle = rim;

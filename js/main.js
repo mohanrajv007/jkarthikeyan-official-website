@@ -281,18 +281,18 @@
   var chatInput = document.getElementById("chat-input");
 
   var CHAT_RESPONSES = {
-    services: "We offer Statutory Audit, Internal Audit, Tax Audit, GST Advisory, Income Tax, Accounting &amp; Bookkeeping, Payroll, Company Registration, ROC Compliance, Startup Consultancy, Financial Advisory and Business Consulting.",
+    services: "We offer Statutory Audit, Internal Audit, Tax Audit, GST Advisory, Income Tax, Accounting & Bookkeeping, Payroll, Company Registration, ROC Compliance, Startup Consultancy, Financial Advisory and Business Consulting.",
     consultation: "Wonderful! Your first 30-minute consultation is completely free. Scroll to the \"Book Your Free Consultation\" section, or I can take you there now.",
-    pricing: "Our pricing is transparent and tailored to your business size and requirements. Book a free consultation and our CAs will share a clear quote &mdash; no hidden charges.",
+    pricing: "Our pricing is transparent and tailored to your business size and requirements. Book a free consultation and our CAs will share a clear quote — no hidden charges.",
     contact: "You can reach us via the Contact page, call us, or WhatsApp us using the green button in the corner.",
-    hours: "We're available Monday&ndash;Saturday, 9:30 AM to 6:30 PM IST.",
+    hours: "We're available Monday–Saturday, 9:30 AM to 6:30 PM IST.",
     default: "Thanks for reaching out! For detailed guidance, I'd recommend booking your free 30-minute consultation with one of our Chartered Accountants. Would you like help with that?"
   };
 
   function addMsg(text, who) {
     var div = document.createElement("div");
     div.className = "chat-msg " + who;
-    div.innerHTML = text;
+    div.textContent = text;
     chatBody.appendChild(div);
     chatBody.scrollTop = chatBody.scrollHeight;
   }

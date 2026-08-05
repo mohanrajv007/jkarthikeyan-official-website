@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Careers | J. Karthikeyan &amp; Co.</title>
 <meta name="description" content="Build your career with J. Karthikeyan & Co. Explore open positions in audit, taxation, GST, accounting and advisory, and apply to join a Big-Four grade Chartered Accountancy practice.">
 <meta name="robots" content="index, follow">
@@ -693,110 +695,11 @@
   </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.25/dist/lenis.min.js" integrity="sha384-ClD7pCgIUz5M81HT8aZmMxCsWmfsycmBiwL5gy1pUbdWHvICIbea22N9sTtAFotA" crossorigin="anonymous"></script>
 <script src="js/motion.js"></script>
 <script src="js/main.js"></script>
-<script>
-  (function () {
-    "use strict";
-
-    /* FAQ accordion — same pattern used on every service/article page */
-    document.querySelectorAll(".faq-item").forEach(function (item) {
-      var question = item.querySelector(".faq-question");
-      var answer = item.querySelector(".faq-answer");
-      question.addEventListener("click", function () {
-        var isOpen = item.classList.contains("open");
-        item.parentElement.querySelectorAll(".faq-item.open").forEach(function (openItem) {
-          if (openItem !== item) {
-            openItem.classList.remove("open");
-            openItem.querySelector(".faq-question").setAttribute("aria-expanded", "false");
-            openItem.querySelector(".faq-answer").style.maxHeight = null;
-          }
-        });
-        if (isOpen) {
-          item.classList.remove("open");
-          question.setAttribute("aria-expanded", "false");
-          answer.style.maxHeight = null;
-        } else {
-          item.classList.add("open");
-          question.setAttribute("aria-expanded", "true");
-          answer.style.maxHeight = answer.scrollHeight + "px";
-        }
-      });
-    });
-
-    /* "Apply Now" on a job card pre-selects that role in the form below */
-    document.querySelectorAll(".apply-btn").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var select = document.getElementById("cf-position");
-        if (select && btn.dataset.role) {
-          Array.prototype.forEach.call(select.options, function (opt) {
-            if (opt.value === btn.dataset.role) select.value = btn.dataset.role;
-          });
-        }
-      });
-    });
-
-    /* Résumé file input: show the chosen filename in the styled drop zone */
-    var fileInput = document.getElementById("cf-resume");
-    var fileWrap = document.getElementById("cf-file-wrap");
-    var fileLabel = document.getElementById("cf-file-label");
-    if (fileInput) {
-      fileInput.addEventListener("change", function () {
-        if (fileInput.files && fileInput.files[0]) {
-          fileLabel.textContent = fileInput.files[0].name;
-          fileWrap.classList.add("has-file");
-        } else {
-          fileLabel.textContent = "Click to choose a file, or drag it here";
-          fileWrap.classList.remove("has-file");
-        }
-      });
-    }
-
-    /* Careers application form — self-contained copy of the same
-       client-side-only submit pattern main.js uses for the other forms
-       on this site (there is no backend, so this simulates success
-       rather than actually sending the application anywhere). */
-    var form = document.getElementById("careers-form");
-    var success = document.getElementById("careers-success");
-    if (form) {
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        var valid = true;
-        form.querySelectorAll("[required]").forEach(function (field) {
-          var wrap = field.closest(".form-field");
-          var errorEl = wrap ? wrap.querySelector(".field-error") : null;
-          var msg = "";
-          if (field.type === "file") {
-            if (!field.files || !field.files.length) msg = "Please attach your resume.";
-          } else if (!field.value || !field.value.trim()) {
-            msg = "This field is required.";
-          } else if (field.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
-            msg = "Enter a valid email address.";
-          } else if (field.type === "tel" && !/^[0-9+\-\s()]{7,}$/.test(field.value)) {
-            msg = "Enter a valid phone number.";
-          }
-          if (wrap) wrap.classList.toggle("invalid", !!msg);
-          if (errorEl) errorEl.textContent = msg;
-          if (msg) valid = false;
-        });
-        if (!valid) return;
-        var submitBtn = form.querySelector("button[type='submit']");
-        var originalText = submitBtn ? submitBtn.innerHTML : "";
-        if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = "Sending&hellip;"; }
-        setTimeout(function () {
-          form.reset();
-          fileLabel.textContent = "Click to choose a file, or drag it here";
-          fileWrap.classList.remove("has-file");
-          if (success) success.classList.add("show");
-          if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = originalText; }
-          if (success) setTimeout(function () { success.classList.remove("show"); }, 6000);
-        }, 900);
-      });
-    }
-  })();
-</script>
+<script src="js/careers.js"></script>
 </body>
 </html>
