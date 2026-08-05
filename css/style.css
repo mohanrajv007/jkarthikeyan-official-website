@@ -818,12 +818,12 @@ section { position: relative; padding: 120px 0; }
    ========================================================= */
 #site-footer { background: var(--bg-inverse); color: var(--text-inverse-muted); padding: 90px 0 0; }
 .footer-top { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 44px; padding-bottom: 60px; border-bottom: 1px solid rgba(255,255,255,.08); }
-.footer-brand p { font-size: 13.5px; margin: 18px 0 22px; max-width: 320px; }
+.footer-brand p { font-size: 13.5px; margin: 18px 0 22px; max-width: 320px; color: var(--text-inverse-muted); }
 .footer-col h4 { color: #fff; font-size: 14.5px; margin-bottom: 20px; letter-spacing: .02em; }
 .footer-col ul { display: flex; flex-direction: column; gap: 12px; }
 .footer-col a { font-size: 13.5px; transition: color .3s var(--ease); }
 .footer-col a:hover { color: var(--gold); }
-.footer-newsletter p { font-size: 13.5px; margin-bottom: 16px; }
+.footer-newsletter p { font-size: 13.5px; margin-bottom: 16px; color: var(--text-inverse-muted); }
 .newsletter-form { display: flex; gap: 8px; }
 .newsletter-form input {
   flex: 1; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14);
