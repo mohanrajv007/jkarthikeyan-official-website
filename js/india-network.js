@@ -265,7 +265,7 @@
 
   /* ---------- Premium 3D location-pin texture ----------
      Drawn once to an offscreen canvas and shared by every marker sprite:
-     glossy gradient body (#E53935), inner white lens, specular sheen, glass
+     glossy gradient body (#1E88E5), inner white lens, specular sheen, glass
      rim-light and a soft contact shadow baked in at the tip. Google/Apple
      Maps-style, not the map's own cyan theme — this is the "state marker",
      the map underneath is untouched. */
@@ -306,10 +306,10 @@
     ctx.clip();
 
     var body = ctx.createLinearGradient(cx - R, headY - R, cx + R * 0.85, tipY);
-    body.addColorStop(0, "#FF6055");
-    body.addColorStop(0.22, "#EF3F38");
-    body.addColorStop(0.5, "#E53935");
-    body.addColorStop(1, "#8E1714");
+    body.addColorStop(0, "#64B5F6");
+    body.addColorStop(0.22, "#42A5F5");
+    body.addColorStop(0.5, "#1E88E5");
+    body.addColorStop(1, "#1565C0");
     ctx.fillStyle = body;
     ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
 
@@ -321,9 +321,9 @@
     ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
 
     var rim = ctx.createRadialGradient(cx + R * 0.62, headY + R * 0.5, 4, cx + R * 0.62, headY + R * 0.5, R * 0.95);
-    rim.addColorStop(0, "rgba(251, 207, 105, 0.32)");
-    rim.addColorStop(0.6, "rgba(255,209,102,0.08)");
-    rim.addColorStop(1, "rgba(255,209,102,0)");
+    rim.addColorStop(0, "rgba(100, 181, 246, 0.32)");
+    rim.addColorStop(0.6, "rgba(100,181,246,0.08)");
+    rim.addColorStop(1, "rgba(100,181,246,0)");
     ctx.fillStyle = rim;
     ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
 
@@ -337,15 +337,15 @@
     ctx.fill();
 
     var deep = ctx.createLinearGradient(cx, headY + R * 0.35, cx, tipY);
-    deep.addColorStop(0, "rgba(90,12,10,0)");
-    deep.addColorStop(1, "rgba(90,12,10,0.4)");
+    deep.addColorStop(0, "rgba(8,30,58,0)");
+    deep.addColorStop(1, "rgba(8,30,58,0.4)");
     ctx.fillStyle = deep;
     ctx.fillRect(0, 0, PIN_TEX_W, PIN_TEX_H);
     ctx.restore();
 
     pinPath();
     ctx.lineWidth = 5;
-    ctx.strokeStyle = "rgba(96,14,12,0.5)";
+    ctx.strokeStyle = "rgba(13,53,101,0.5)";
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(cx, headY, R - 8, deg(198), deg(316), false);
@@ -356,7 +356,7 @@
 
     var lensR = R * 0.4;
     ctx.save();
-    ctx.shadowColor = "rgba(70,8,8,0.4)";
+    ctx.shadowColor = "rgba(10,40,80,0.4)";
     ctx.shadowBlur = 10;
     ctx.shadowOffsetY = 4;
     ctx.fillStyle = "#ffffff";
@@ -402,6 +402,9 @@
   }
   var goldGlowTexture = makeGoldGlowTexture();
   var GOLD = 0xffd166;
+  /* Glow/pulse tint for the pin markers themselves (kept separate from GOLD,
+     which still colours the HQ connection lines — those are untouched). */
+  var MARKER_GLOW = 0x1e88e5;
 
   /* ---------- Interior particle fill (sparse, dim — texture, not mass) ---------- */
   var rawInterior = silhouette.interior;
@@ -576,7 +579,7 @@
 
     var glow = new THREE.Sprite(new THREE.SpriteMaterial({
       map: goldGlowTexture,
-      color: GOLD,
+      color: MARKER_GLOW,
       transparent: true,
       opacity: 0,
       depthTest: false,
@@ -613,7 +616,7 @@
   for (var rg = 0; rg < 9; rg++) {
     var ringMesh = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
       map: ringTexture,
-      color: GOLD,
+      color: MARKER_GLOW,
       transparent: true,
       opacity: 0,
       depthTest: false,
