@@ -265,10 +265,10 @@
 
   /* ---------- Premium 3D location-pin texture ----------
      Drawn once to an offscreen canvas and shared by every marker sprite:
-     glossy gradient body (#1E88E5), inner white lens, specular sheen, glass
-     rim-light and a soft contact shadow baked in at the tip. Google/Apple
-     Maps-style, not the map's own cyan theme — this is the "state marker",
-     the map underneath is untouched. */
+     glossy gradient body (#1E88E5), a real punched-through transparent hole
+     with a bevelled rim (glossy ring, not a filled lens), specular sheen and
+     a soft contact shadow baked in at the tip. Not the map's own cyan theme
+     — this is the "state marker", the map underneath is untouched. */
   var PIN_TEX_W = 256, PIN_TEX_H = 340;
   var PIN_ASPECT = PIN_TEX_H / PIN_TEX_W;
   function makePinTexture() {
@@ -354,29 +354,39 @@
     ctx.lineCap = "round";
     ctx.stroke();
 
-    var lensR = R * 0.4;
+    /* Punch a real transparent hole through the pin body — this marker is a
+       glossy blue ring (see-through centre), not a pin with a solid lens. */
+    var lensR = R * 0.42;
     ctx.save();
-    ctx.shadowColor = "rgba(10,40,80,0.4)";
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetY = 4;
-    ctx.fillStyle = "#ffffff";
+    ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
     ctx.arc(cx, headY, lensR, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
-    var lens = ctx.createLinearGradient(cx - lensR, headY - lensR, cx + lensR, headY + lensR);
-    lens.addColorStop(0, "#ffffff");
-    lens.addColorStop(0.6, "#F7F9FC");
-    lens.addColorStop(1, "#E4E9F0");
-    ctx.fillStyle = lens;
+
+    /* Bevelled rim around the hole so it reads as a glossy tube rather than
+       a flat cutout — bright highlight upper-left, soft shadow lower-right. */
+    ctx.save();
     ctx.beginPath();
-    ctx.arc(cx, headY, lensR, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cx, headY, lensR - 1.5, deg(200), deg(340), false);
-    ctx.lineWidth = 2.5;
-    ctx.strokeStyle = "rgba(255,255,255,0.9)";
+    ctx.arc(cx, headY, lensR + 4, deg(200), deg(30), false);
+    ctx.lineWidth = 8;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "rgba(255,255,255,0.55)";
     ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(cx, headY, lensR + 4, deg(30), deg(200), false);
+    ctx.lineWidth = 8;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "rgba(8,30,58,0.45)";
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(cx, headY, lensR + 1, 0, Math.PI * 2);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.stroke();
+    ctx.restore();
 
     var tex = new THREE.CanvasTexture(c);
     if (THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
